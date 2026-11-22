@@ -1,5 +1,9 @@
 LAST DAY - ZOMBIE SURVIVAL
 
+CÁCH CHƠI:
+- Local:  mo ZOMBIE-SURVIVAL/index.html hoac html/index.html bang trinh duyet (hoac Live Server).
+- Online: https://nhatvuong-tech.github.io/zombie/  (GitHub Pages, tu dong cap nhat khi push len nhanh main)
+
 CẤU TRÚC:
 ZOMBIE-SURVIVAL/
   html/index.html
