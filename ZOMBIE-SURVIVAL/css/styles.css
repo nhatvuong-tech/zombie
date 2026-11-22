@@ -1,0 +1,167 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&display=swap');
+:root{--bg:#080d0b;--panel:#101a15;--green:#8cf0a7;--muted:#a5b2a8;--line:#293b30}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:#f2f5f0;font-family:Rajdhani,Arial,sans-serif}
+button{font:inherit;cursor:pointer}
+a{color:inherit;text-decoration:none}
+#landingPage{overflow:hidden}
+.navbar{height:78px;padding:0 7%;display:flex;align-items:center;justify-content:space-between;background:#080d0bf2;border-bottom:1px solid #ffffff12;position:absolute;top:0;left:0;right:0;z-index:4}
+.brand{font:900 27px 'Barlow Condensed',sans-serif;letter-spacing:2px}.brand span{color:var(--green)}
+.nav-links{display:flex;gap:34px;color:#c3cec5;font-size:14px;font-weight:700;letter-spacing:1.2px}.nav-links a:hover{color:var(--green)}
+.nav-play,.outline-btn{background:transparent;border:1px solid var(--green);color:var(--green);padding:12px 20px;font-weight:700;letter-spacing:1px}
+.hero{min-height:760px;height:100vh;max-height:920px;position:relative;display:flex;align-items:center;padding:100px 10% 70px;background:radial-gradient(ellipse at 76% 48%,#53684b55 0,transparent 30%),linear-gradient(90deg,#070d0bf7 0%,#0a110de8 42%,#0a100b80 100%),linear-gradient(0deg,#080d0b 0%,transparent 30%),url('https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=2000&q=85') center/cover}
+.hero:after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0 3px,#ffffff05 4px)}
+.hero-content{position:relative;z-index:1;max-width:720px}
+.eyebrow{font-size:13px;font-weight:700;letter-spacing:3px;color:var(--green);margin-bottom:22px}
+.eyebrow span{display:inline-block;width:8px;height:8px;background:#f05c4d;border-radius:50%;margin-right:9px;box-shadow:0 0 12px #f05c4d}
+.hero h1,.section h2,.creator-section h2{font:900 clamp(76px,12vw,150px)/.76 'Barlow Condensed',sans-serif;letter-spacing:3px}
+.hero h1 em,.section h2 em,.creator-section h2 em{font-style:normal;color:var(--green)}
+.hero-subtitle{font:700 25px 'Barlow Condensed',sans-serif;letter-spacing:8px;margin:22px 0;color:#d9e3da}
+.hero-copy{font-size:18px;line-height:1.7;color:#bac5bb}
+.hero-actions{display:flex;align-items:center;gap:28px;margin-top:34px;flex-wrap:wrap}
+.primary-btn{background:var(--green);border:0;color:#08120c;padding:16px 25px;font-weight:800;letter-spacing:1px;box-shadow:0 0 30px #8cf0a733;transition:.2s}
+.primary-btn:hover{transform:translateY(-3px);box-shadow:0 0 40px #8cf0a766}
+.text-link{font-size:13px;font-weight:700;letter-spacing:1.5px}.text-link span{color:var(--green);margin-left:8px}
+.hero-meta{margin-top:75px;color:#7d8b80;font-size:12px;letter-spacing:2px}.hero-meta span{color:var(--green);margin-right:12px}
+.hero-side-note{position:absolute;right:4%;top:48%;writing-mode:vertical-rl;color:#c0c9c055;letter-spacing:5px;font-size:11px}
+.hero-bottom{position:absolute;bottom:25px;left:7%;right:7%;display:flex;justify-content:space-between;color:#839087;font-size:11px;letter-spacing:2px}
+.section{padding:115px 10%;position:relative}.section-label{color:var(--green);font-size:12px;letter-spacing:3px;font-weight:700;margin-bottom:55px}
+.about-section{background:linear-gradient(135deg,#101a15,#0a100d)}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:9%;align-items:center}
+.section h2,.creator-section h2{font-size:clamp(48px,7vw,85px);line-height:.9}
+.about-copy{color:#b5c1b7;font-size:18px;line-height:1.8}.about-copy p+p{margin-top:15px}.about-copy strong{color:#f1f5ef}
+.outline-btn{margin-top:28px}.outline-btn:hover,.nav-play:hover{background:var(--green);color:#08120c}
+.features-section{background:#080d0b}.section-heading{margin-bottom:45px}
+.section-heading h2{font-size:clamp(48px,7vw,78px)}
+.feature-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}
+.feature-card{min-height:260px;padding:27px 23px;background:linear-gradient(145deg,#142019,#0c130f);border:1px solid #293b30;position:relative;transition:.25s}
+.feature-card:hover{transform:translateY(-7px);border-color:#8cf0a777}
+.feature-number{position:absolute;right:20px;top:18px;color:#718276;font-size:12px}
+.feature-icon{font-size:35px;color:var(--green);margin:25px 0}
+.feature-card h3{font:700 22px 'Barlow Condensed',sans-serif;letter-spacing:1px;margin-bottom:12px}
+.feature-card p{color:#9eaca1;line-height:1.6;font-size:16px}
+.creator-section{padding:110px 10%;position:relative;overflow:hidden;background:radial-gradient(ellipse at 80% 50%,#45634a44,transparent 35%),linear-gradient(110deg,#101a14,#080d0b)}
+.creator-glow{position:absolute;width:420px;height:420px;border:1px solid #8cf0a71a;border-radius:50%;right:8%;top:15%;box-shadow:0 0 0 45px #8cf0a708,0 0 0 90px #8cf0a705}
+.creator-content{max-width:620px;position:relative}.creator-section h2{font-size:clamp(65px,9vw,110px)}
+.creator-description{margin-top:30px;color:#b5c1b7;font-size:18px;line-height:1.8;max-width:580px}
+.creator-tags{display:flex;gap:10px;flex-wrap:wrap;margin-top:25px}.creator-tags span{padding:8px 13px;border:1px solid #526b59;color:var(--green);font-size:12px;letter-spacing:1px}
+.creator-name{margin-top:35px;font-size:13px;letter-spacing:2px;color:#9ba99e}.creator-name strong{color:#fff}.creator-hint{color:#728076;font-size:12px;margin-top:8px}
+footer{padding:30px 7%;display:flex;justify-content:space-between;align-items:center;gap:15px;border-top:1px solid #ffffff12;color:#748177;font-size:11px;letter-spacing:1.5px}footer .brand{color:#fff}
+.hidden{display:none!important}
+#gameScreen{position:fixed;inset:0;background:#080d13;z-index:20}#game{display:block;width:100%;height:100%;background:#101b1b}
+.hud{position:fixed;top:18px;left:18px;right:18px;display:flex;justify-content:space-between;align-items:flex-start;z-index:5;pointer-events:none}
+.panel{min-width:150px;padding:12px 18px;background:#050c11e0;border:1px solid #334b48;border-radius:12px;box-shadow:0 0 20px #0008}
+.stat{color:#aab9b6;font-size:13px;margin-bottom:7px}.value{color:#7dffad;font-size:23px;font-weight:bold}
+.health-bg{width:170px;height:9px;margin-top:8px;overflow:hidden;background:#293638;border-radius:10px}#healthBar{width:100%;height:100%;background:#39e77a;transition:width .2s}
+.hud button,button{padding:11px 15px;color:#7dffad;background:#182c2a;border:1px solid #54e99a;border-radius:8px;font-weight:bold;cursor:pointer}.hud button{pointer-events:auto}
+.hud-btns{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.hud-btns #hudShopBtn{background:#241d0c;border-color:#ffd76a;color:#ffd76a;white-space:nowrap}
+.overlay{position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;padding:20px;background:#03090ce0}
+/* Cửa hàng phải nằm trên #gameScreen (z-index:20) để mở được khi đang chơi */
+#shopModal{z-index:60}
+.menu{width:min(440px,100%);padding:35px 25px;text-align:center;background:linear-gradient(145deg,#172a27,#0a1319);border:1px solid #426a58;border-radius:20px;box-shadow:0 0 50px #20e87818}
+.logo{color:#7dffad;font:900 52px 'Barlow Condensed',sans-serif;letter-spacing:2px}.menu h2{margin-top:5px}.subtitle{margin:18px 0 28px;color:#9caaa6;font-size:14px;line-height:1.7}
+.menu button{display:block;width:100%;margin-top:12px;padding:15px;color:white;background:#173c2b;border:1px solid #54e99a;border-radius:9px;font-size:16px}.menu button:hover{background:#237347;transform:translateY(-2px)}.menu .secondary{background:#17231f;border-color:#52645a}
+.game-info{margin-top:22px;color:#81948b;font-size:12px;line-height:1.8}.green{color:#7dffad}.red{color:#ff6666}.guide-text{text-align:left}
+#message{position:fixed;top:27%;left:50%;z-index:6;color:#7dffad;font-size:25px;font-weight:bold;text-shadow:0 0 15px #39e77a;transform:translateX(-50%);pointer-events:none}
+.mobile-controls{position:fixed;bottom:20px;left:20px;z-index:7;display:none}.dpad{display:grid;grid-template-columns:repeat(3,48px);gap:5px;justify-items:center}.dpad button{width:48px;height:48px;padding:0;color:white;background:#172b29dd;border-color:#60c98c;font-size:20px;touch-action:none}
+@media(max-width:800px){.nav-links{gap:13px;font-size:11px}.navbar{padding:0 4%}.feature-grid{grid-template-columns:repeat(2,1fr)}.about-grid{grid-template-columns:1fr;gap:30px}}
+@media(max-width:560px){.navbar{height:66px}.nav-links{display:none}.hero{min-height:720px;padding:110px 7% 60px}.hero h1{font-size:90px}.hero-side-note{display:none}.section,.creator-section{padding:75px 7%}.feature-grid{grid-template-columns:1fr}.feature-card{min-height:210px}.about-grid{gap:25px}footer{flex-direction:column;text-align:center}.mobile-controls{display:block}.panel{min-width:100px;padding:9px}.health-bg{width:100px}.value{font-size:17px}.stat{font-size:11px}.hud{top:10px;left:8px;right:8px}}
+
+/* --- Màn chạy & Trạm Cứu Trợ UI --- */
+.progress-panel{min-width:260px;text-align:center}
+.progress-track-wrap{display:flex;align-items:center;gap:8px;margin-top:6px}
+.runner-icon,.shelter-icon-mini{font-size:18px}
+.progress-track{flex:1;height:10px;background:#243632;border-radius:10px;overflow:hidden;border:1px solid #3d594f;position:relative}
+#runProgressBar{width:0%;height:100%;background:linear-gradient(90deg,#39e77a,#8cf0a7);transition:width .15s ease}
+.distance-left{color:#c4d6cb;font-size:13px;font-weight:700;margin-top:5px;letter-spacing:1px}
+
+.chase-warning{position:fixed;top:92px;left:50%;transform:translateX(-50%);background:rgba(180,20,20,0.85);color:#fff;border:1px solid #ff4444;padding:8px 20px;border-radius:30px;font-weight:bold;font-size:14px;letter-spacing:1px;box-shadow:0 0 25px rgba(255,50,50,0.6);z-index:6;pointer-events:none;animation:pulseWarning .8s infinite alternate}
+@keyframes pulseWarning{0%{transform:translateX(-50%) scale(0.96);opacity:0.8}100%{transform:translateX(-50%) scale(1.04);opacity:1}}
+
+.shelter-menu{width:min(500px,94%);padding:36px 30px;border-color:#54e99a;box-shadow:0 0 60px rgba(84,233,154,0.25)}
+.shelter-badge{display:inline-block;background:#173c2b;border:1px solid #54e99a;color:#7dffad;padding:6px 16px;border-radius:20px;font-size:13px;font-weight:bold;letter-spacing:1.5px;margin-bottom:12px}
+.shelter-stats{display:flex;gap:15px;margin:20px 0;justify-content:center}
+.shelter-stat-box{flex:1;background:#0d1815;border:1px solid #294437;padding:14px 10px;border-radius:12px;display:flex;flex-direction:column;gap:5px}
+.shelter-stat-box .lbl{font-size:12px;color:#8ba093;letter-spacing:1px}
+.shelter-stat-box .val{font-size:20px;font-weight:800}
+
+/* Thanh thể lực (Stamina) */
+.stamina-bg{width:170px;height:6px;background:#243632;border-radius:10px;overflow:hidden;margin-top:2px}
+#staminaBar{width:100%;height:100%;background:linear-gradient(90deg,#ffb733,#ffe153);transition:width .1s}
+
+/* Boss Bar */
+.boss-bar-wrap{position:fixed;top:80px;left:50%;transform:translateX(-50%);width:min(420px,90%);background:rgba(10,5,5,0.85);border:1px solid #ff3b30;border-radius:12px;padding:8px 16px;z-index:6;box-shadow:0 0 25px rgba(255,59,48,0.5);text-align:center}
+.boss-name{font-size:13px;font-weight:800;color:#ff6961;letter-spacing:2px;margin-bottom:5px}
+.boss-hp-bg{width:100%;height:8px;background:#3a1818;border-radius:6px;overflow:hidden}
+#bossHpBar{width:100%;height:100%;background:linear-gradient(90deg,#ff3b30,#ff9500);transition:width .15s}
+
+/* Guide scrollable modal */
+.guide-menu{width:min(540px,95%);max-height:85vh;display:flex;flex-direction:column}
+.guide-scrollable{overflow-y:auto;max-height:55vh;padding-right:8px;margin-bottom:12px}
+.guide-scrollable::-webkit-scrollbar{width:6px}
+.guide-scrollable::-webkit-scrollbar-track{background:#11201a;border-radius:4px}
+.guide-scrollable::-webkit-scrollbar-thumb{background:#33694f;border-radius:4px}
+
+/* ---------- CỬA HÀNG ---------- */
+.nav-coins{color:#ffd76a;font-weight:800;letter-spacing:1px;font-size:14px;display:flex;align-items:center}
+.shop-nav-btn{margin-top:0}
+
+.shop{width:min(1080px,96vw);max-height:92vh;position:relative;display:flex;flex-direction:column;background:linear-gradient(150deg,#12211b,#0a1310 60%,#0d1a14);border:1px solid #3f6a54;border-radius:18px;box-shadow:0 0 70px rgba(84,233,154,.18);overflow:hidden}
+.shop-header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px 22px;border-bottom:1px solid #244034;background:linear-gradient(90deg,#122a20,#0b1712)}
+.shop-title{font:800 24px 'Barlow Condensed',sans-serif;letter-spacing:1.5px;color:#8cf0a7}
+.shop-sub{font-size:12px;color:#8ba093;margin-top:3px}
+.shop-coins{font-size:20px;font-weight:800;color:#ffd76a;background:#241d0c;border:1px solid #6b5420;border-radius:10px;padding:8px 16px;white-space:nowrap}
+.shop-close{background:#2a1518;border:1px solid #7d3b3b;color:#ff8080;border-radius:10px;padding:8px 13px;font-size:16px;font-weight:800}
+.shop-close:hover{background:#5b1f1f}
+
+.shop-loadout{display:flex;flex-wrap:wrap;gap:8px;padding:10px 22px;background:#0c1712;border-bottom:1px solid #1e3529;font-size:12px;color:#a9c3b4}
+.shop-loadout span{background:#12271d;border:1px solid #2c4a3b;border-radius:20px;padding:4px 12px}
+
+.shop-tabs{display:flex;gap:8px;padding:14px 22px 0}
+.shop-tab{flex:1;padding:11px 8px;background:#0f1d17;border:1px solid #2b4738;border-radius:10px;color:#9fb6a8;font-weight:800;letter-spacing:1px;font-size:14px;transition:.15s}
+.shop-tab:hover{border-color:#54e99a;color:#c8f5d9}
+.shop-tab.active{background:linear-gradient(180deg,#1d4734,#123023);border-color:#54e99a;color:#8cf0a7;box-shadow:0 0 18px rgba(84,233,154,.22)}
+
+.shop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(216px,1fr));gap:14px;padding:18px 22px 24px;overflow-y:auto}
+.shop-grid::-webkit-scrollbar{width:8px}
+.shop-grid::-webkit-scrollbar-track{background:#0b1510}
+.shop-grid::-webkit-scrollbar-thumb{background:#2f5a44;border-radius:6px}
+
+.shop-item{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 12px 12px;background:linear-gradient(160deg,#152820,#0d1a14);border:1px solid #294737;border-radius:14px;transition:.18s}
+.shop-item:hover{border-color:#4fbb87;transform:translateY(-3px)}
+.shop-item.equipped{border-color:#8cf0a7;box-shadow:0 0 22px rgba(140,240,167,.25)}
+.shop-item.equipped:after{content:"ĐANG DÙNG";position:absolute;top:-8px;right:10px;background:#8cf0a7;color:#08210f;font-size:10px;font-weight:900;letter-spacing:1px;padding:2px 8px;border-radius:10px}
+
+.si-icon{width:92px;height:100px;border-radius:10px;background-color:#0a1410;border:1px solid #20382c}
+.si-name{font:800 15px 'Barlow Condensed',sans-serif;letter-spacing:.8px;color:#e8f7ed;text-align:center;line-height:1.15}
+.si-tag{font-size:10px;font-weight:800;letter-spacing:1px;color:#ffd76a;background:#241d0c;border-radius:10px;padding:2px 8px}
+.si-desc{font-size:11.5px;color:#93a89b;text-align:center;line-height:1.45;min-height:48px}
+.si-stats{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;font-size:11px;color:#b9d0c1}
+.si-stats span{background:#11251c;border:1px solid #274435;border-radius:8px;padding:2px 7px}
+.si-stats .green{color:#8cf0a7;border-color:#3a7a5b}
+
+.shop-buy,.shop-equip,.shop-owned,.shop-locked{width:100%;margin-top:4px;padding:9px 6px;border-radius:9px;font-size:13px;font-weight:800;letter-spacing:.6px;border:1px solid #54e99a}
+.shop-buy{background:#1c4a33;color:#c9ffe0}
+.shop-buy:hover{background:#26694a}
+.shop-equip{background:#16304a;border-color:#4f9bff;color:#b7d9ff}
+.shop-equip:hover{background:#1d4062}
+.shop-owned{background:#0f2419;border-color:#3d6b52;color:#7fb397;cursor:default}
+.shop-locked{background:#241417;border-color:#5c3237;color:#a97a7f}
+.shop-locked:hover{background:#331b1f}
+
+.shop-msg{position:absolute;bottom:16px;left:50%;transform:translateX(-50%) translateY(20px);background:#1d3a2a;border:1px solid #54e99a;color:#c9ffe0;padding:9px 22px;border-radius:24px;font-weight:700;font-size:13px;opacity:0;pointer-events:none;transition:.25s}
+.shop-msg.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.earned-box{margin:14px 0;padding:12px;background:#0e2018;border:1px dashed #3f7a5b;border-radius:12px;color:#a9c3b4;font-size:14px;line-height:1.7}
+.earned-box strong{color:#ffd76a;font-size:20px}
+.total-line{font-size:12px;color:#7f9b8c}
+
+@media(max-width:700px){
+  .shop-grid{grid-template-columns:repeat(2,1fr);padding:12px}
+  .shop{max-height:94vh}
+  .shop-title{font-size:19px}
+  .shop-sub{display:none}
+  .nav-coins{font-size:12px}
+}
