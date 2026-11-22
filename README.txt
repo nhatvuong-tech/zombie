@@ -28,6 +28,19 @@ TÍNH NĂNG MỚI - MÀN CHẠY SINH TỒN (SURVIVAL RUN):
 - Đến Trạm Cứu Trợ: Kích hoạt hệ thống phòng thủ tiêu diệt bầy quái phía sau, hồi phục 100% máu, thưởng điểm và chuẩn bị xuất phát màn kế tiếp.
 - Giữ đầy đủ tính năng: Tự động bắn zombie gần nhất, nhặt túi cứu trợ hồi máu, điểm cao lưu LocalStorage, trang giới thiệu và tùy chỉnh.
 
+TÀI KHOẢN / ĐĂNG NHẬP (AUTH):
+- Vào bằng nút "👤 ĐĂNG NHẬP" trên thanh menu trang chủ.
+- ĐĂNG KÝ: tên tối thiểu 3 ký tự (chữ, số, _ và .), mật khẩu tối thiểu 4 ký tự.
+  Đăng ký sẽ MANG THEO điểm & đồ đang có ở chế độ Khách sang tài khoản mới.
+- ĐĂNG NHẬP: tên không phân biệt hoa/thường. Phiên được giữ khi tải lại trang.
+- ĐĂNG XUẤT: cùng nút đó trên menu, quay về chế độ Khách.
+- MẬT KHẨU được băm SHA-256 + salt (không lưu plaintext).
+- "DATABASE" là localStorage trên máy người chơi:
+  • lastDayAccounts_v1 : toàn bộ tài khoản (tên, salt, hash, hồ sơ riêng từng người).
+  • lastDaySession_v1   : phiên đăng nhập hiện tại.
+  • lastDayBest@<tên>   : điểm cao riêng của từng tài khoản (khách dùng lastDayBest).
+- Chế độ KHÁCH vẫn chơi bình thường, hồ sơ ở khóa lastDayProfile_v1.
+
 CỬA HÀNG SINH TỒN (SHOP) - ĐIỂM TÍCH LŨY:
 - Điểm sau mỗi ván được quy đổi tự động: ĐIỂM NHẬN = sàn(Điểm ván / 5). Ví dụ 1.500 điểm -> 300 điểm tích lũy.
 - Điểm tích lũy lưu trong LocalStorage (khóa lastDayProfile_v1) nên giữ nguyên khi tải lại trang.

@@ -207,33 +207,60 @@ function defaultProfile() {
   };
 }
 
+function normalizeProfile(p) {
+  const d = defaultProfile();
+  return {
+    version: 1,
+    coins: Number(p && p.coins) || 0,
+    owned: Object.assign({}, d.owned, (p && p.owned) || {}),
+    equipped: {
+      character: (p && p.equipped && p.equipped.character) || "boy",
+      gun: (p && p.equipped && p.equipped.gun) || "pistol",
+      accessories: Array.isArray(p && p.equipped && p.equipped.accessories)
+        ? p.equipped.accessories.slice(0, 2) : []
+    }
+  };
+}
+
 function loadProfile() {
+  // Đã đăng nhập -> hồ sơ nằm trong database tài khoản
+  if (typeof authCurrentUser === "function" && authCurrentUser()) {
+    const prof = typeof authGetProfile === "function" ? authGetProfile(authCurrentUser()) : null;
+    if (prof) return normalizeProfile(prof);
+  }
+  // Khách -> hồ sơ cũ theo khóa legacy
   try {
     const raw = localStorage.getItem(PROFILE_KEY);
     if (!raw) return defaultProfile();
-    const p = JSON.parse(raw);
-    const d = defaultProfile();
-    return {
-      version: 1,
-      coins: Number(p.coins) || 0,
-      owned: Object.assign({}, d.owned, p.owned || {}),
-      equipped: {
-        character: (p.equipped && p.equipped.character) || "boy",
-        gun: (p.equipped && p.equipped.gun) || "pistol",
-        accessories: Array.isArray(p.equipped && p.equipped.accessories)
-          ? p.equipped.accessories.slice(0, 2) : []
-      }
-    };
+    return normalizeProfile(JSON.parse(raw));
   } catch (e) {
     return defaultProfile();
   }
 }
 
-let profile = loadProfile();
-
 function saveProfile() {
-  try { localStorage.setItem(PROFILE_KEY, JSON.stringify(profile)); } catch (e) {}
+  try {
+    if (typeof authCurrentUser === "function" && authCurrentUser() && typeof authSetProfile === "function") {
+      authSetProfile(authCurrentUser(), profile);
+      return;
+    }
+    localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+  } catch (e) {}
 }
+
+// Nạp lại hồ sơ sau khi đăng nhập / đăng xuất / đăng ký
+function reloadProfile() {
+  profile = loadProfile();
+  saveProfile();
+  refreshCoinUI();
+  if (typeof renderShop === "function") renderShop();
+  // nếu đang trong ván thì áp dụng luôn trang bị mới
+  if (typeof refreshLoadout === "function" && typeof gameRunning !== "undefined" && gameRunning) {
+    refreshLoadout();
+  }
+}
+
+let profile = loadProfile();
 
 function addCoins(amount) {
   profile.coins = Math.max(0, Math.floor(profile.coins + amount));

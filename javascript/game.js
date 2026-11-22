@@ -35,10 +35,24 @@ let shelterInterval = null;
 let shakeTimer = 0;
 let boss = null;
 
-const bestKey = "lastDayBest";
-let best = Number(localStorage.getItem(bestKey)) || 0;
+// Điểm cao: mỗi tài khoản một dòng, khách dùng dòng chung
+function currentBestKey() {
+  if (typeof authCurrentUser === "function" && authCurrentUser()) {
+    return "lastDayBest@" + authCurrentUser();
+  }
+  return "lastDayBest";
+}
+let best = 0;
+function reloadBest() {
+  best = Number(localStorage.getItem(currentBestKey())) || 0;
+  if (typeof $ === "function") {
+    if ($("finalBest")) $("finalBest").textContent = best;
+    if ($("bestScore")) $("bestScore").textContent = best;
+  }
+}
 
 const $ = id => document.getElementById(id);
+reloadBest();
 if ($("bestScore")) $("bestScore").textContent = best;
 
 function resize() {
@@ -1208,7 +1222,7 @@ function endGame() {
   const earned = Math.max(0, Math.floor((score / 5) * coinMul));
   if (typeof addCoins === "function") addCoins(earned);
 
-  if (score > best) { best = score; localStorage.setItem(bestKey, best); }
+  if (score > best) { best = score; localStorage.setItem(currentBestKey(), best); }
   $("finalScore").textContent = score;
   $("finalBest").textContent = best;
   if ($("bestScore")) $("bestScore").textContent = best;

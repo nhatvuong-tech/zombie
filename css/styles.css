@@ -104,8 +104,7 @@ footer{padding:30px 7%;display:flex;justify-content:space-between;align-items:ce
 .guide-scrollable::-webkit-scrollbar-track{background:#11201a;border-radius:4px}
 .guide-scrollable::-webkit-scrollbar-thumb{background:#33694f;border-radius:4px}
 
-/* ---------- CỬA HÀNG ---------- */
-.nav-coins{color:#ffd76a;font-weight:800;letter-spacing:1px;font-size:14px;display:flex;align-items:center}
+/* ---------- CỬA HÀNG ---------- */.nav-coins{color:#ffd76a;font-weight:800;letter-spacing:1px;font-size:14px;display:flex;align-items:center}
 .shop-nav-btn{margin-top:0}
 
 .shop{width:min(1080px,96vw);max-height:92vh;position:relative;display:flex;flex-direction:column;background:linear-gradient(150deg,#12211b,#0a1310 60%,#0d1a14);border:1px solid #3f6a54;border-radius:18px;box-shadow:0 0 70px rgba(84,233,154,.18);overflow:hidden}
@@ -164,4 +163,35 @@ footer{padding:30px 7%;display:flex;justify-content:space-between;align-items:ce
   .shop-title{font-size:19px}
   .shop-sub{display:none}
   .nav-coins{font-size:12px}
+}
+
+/* ---------- ĐĂNG NHẬP / ĐĂNG KÝ ---------- */
+#authModal{z-index:65}
+.auth{width:min(430px,94vw);max-height:92vh;overflow-y:auto;background:linear-gradient(150deg,#12211b,#0a1310 60%,#0d1a14);border:1px solid #3f6a54;border-radius:18px;box-shadow:0 0 70px rgba(84,233,154,.18)}
+.auth-header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:18px 22px;border-bottom:1px solid #244034;background:linear-gradient(90deg,#122a20,#0b1712)}
+.auth-title{font:800 22px 'Barlow Condensed',sans-serif;letter-spacing:1.5px;color:#8cf0a7}
+.auth-tabs{display:flex;gap:8px;padding:14px 22px 0}
+.auth-tab{flex:1;padding:10px 8px;background:#0f1d17;border:1px solid #2b4738;border-radius:10px;color:#9fb6a8;font-weight:800;letter-spacing:1px;font-size:13px;transition:.15s}
+.auth-tab:hover{border-color:#54e99a;color:#c8f5d9}
+.auth-tab.active{background:linear-gradient(180deg,#1d4734,#123023);border-color:#54e99a;color:#8cf0a7;box-shadow:0 0 18px rgba(84,233,154,.22)}
+.auth-body{display:flex;flex-direction:column;gap:8px;padding:16px 22px 22px}
+.auth-body label{font-size:11px;font-weight:800;letter-spacing:1px;color:#7fae93;margin-top:6px}
+.auth-body input{padding:12px 14px;background:#0b1712;border:1px solid #2b4738;border-radius:10px;color:#e8f7ed;font-size:15px;outline:none;transition:.15s}
+.auth-body input:focus{border-color:#54e99a;box-shadow:0 0 14px rgba(84,233,154,.25)}
+#authSubmitBtn{margin-top:14px;padding:13px;border-radius:10px;background:linear-gradient(180deg,#1d4734,#123023);border:1px solid #54e99a;color:#c9ffe0;font-weight:800;letter-spacing:1px;font-size:15px;cursor:pointer}
+#authSubmitBtn:hover{background:#26694a}
+#authSubmitBtn:disabled{opacity:.55;cursor:wait}
+.auth-guest{margin-top:4px;padding:10px;border-radius:10px;background:#0f1d17;border:1px solid #2b4738;color:#9fb6a8;font-weight:700;font-size:13px;cursor:pointer}
+.auth-guest:hover{border-color:#54e99a;color:#c8f5d9}
+.auth-msg{min-height:18px;font-size:13px;font-weight:700;color:#8cf0a7;text-align:center}
+.auth-msg.error{color:#ff8080}
+.auth-note{font-size:11px;color:#6f8a7c;text-align:center;line-height:1.6;margin:6px 0 0}
+.nav-user{color:#8cf0a7;font-weight:800;font-size:13px;display:flex;align-items:center;letter-spacing:.5px}
+.auth-nav-btn{margin-top:0;white-space:nowrap}
+.shop-user{font-size:13px;font-weight:800;color:#8cf0a7;background:#0e2018;border:1px solid #2c4a3b;border-radius:10px;padding:8px 14px;white-space:nowrap}
+.auth-toast{position:fixed;top:86px;left:50%;transform:translateX(-50%) translateY(-16px);background:#1d3a2a;border:1px solid #54e99a;color:#c9ffe0;padding:10px 24px;border-radius:26px;font-weight:700;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:70;box-shadow:0 0 30px rgba(84,233,154,.3)}
+.auth-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:700px){
+  .nav-user,.auth-nav-btn{font-size:11px;padding:8px 10px}
+  .shop-user{display:none}
 }

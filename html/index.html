@@ -19,6 +19,8 @@
       <button class="outline-btn" id="landingGuideBtn" style="margin-top:0">CÁCH CHƠI 📖</button>
       <button class="outline-btn shop-nav-btn" data-open-shop="menu" style="margin-top:0">🛒 CỬA HÀNG</button>
       <span class="nav-coins">💰 <span id="menuCoins">0</span></span>
+      <span class="nav-user" id="navUser">👤 Khách</span>
+      <button class="outline-btn auth-nav-btn" id="navAuthBtn">👤 ĐĂNG NHẬP</button>
       <button class="nav-play" id="landingPlayBtn">CHƠI NGAY ↗</button>
     </nav>
 
@@ -108,6 +110,7 @@
         <div class="value" id="score">0</div>
         <div class="stat wave">MÀN: <span id="wave">1</span></div>
         <div class="stat wave" style="margin-top:4px">💰 <span id="hudCoins">0</span> điểm</div>
+        <div class="stat wave" style="margin-top:4px" id="hudUser">👤 Khách</div>
       </div>
       <div class="hud-btns">
         <button id="pauseBtn">Ⅱ TẠM DỪNG</button>
@@ -160,6 +163,7 @@
           <p class="shop-sub">Mua nhân vật, súng và phụ kiện bằng điểm kiếm được sau mỗi ván</p>
         </div>
         <div class="shop-coins">💰 <span id="shopCoins">0</span></div>
+        <div class="shop-user" id="shopUser">👤 Khách</div>
         <button class="shop-close" id="shopCloseBtn" aria-label="Đóng">✕</button>
       </div>
       <div class="shop-loadout" id="shopLoadout"></div>
@@ -173,7 +177,36 @@
     </div>
   </div>
 
-  <script src="../javascript/shop.js?v=7"></script>
-  <script src="../javascript/game.js?v=17"></script>
+  <!-- ĐĂNG NHẬP / ĐĂNG KÝ -->
+  <div class="overlay hidden" id="authModal">
+    <div class="auth">
+      <div class="auth-header">
+        <h2 class="auth-title">👤 TÀI KHOẢN SINH TỒN</h2>
+        <button class="shop-close" id="authCloseBtn" aria-label="Đóng">✕</button>
+      </div>
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-atab="login">🔓 ĐĂNG NHẬP</button>
+        <button class="auth-tab" data-atab="register">🆕 ĐĂNG KÝ</button>
+      </div>
+      <div class="auth-body">
+        <label for="authUser">TÊN ĐĂNG NHẬP</label>
+        <input id="authUser" maxlength="24" autocomplete="username" placeholder=" Ví dụ: nhatvuong">
+        <label for="authPass">MẬT KHẨU</label>
+        <input id="authPass" type="password" autocomplete="current-password" placeholder="••••••">
+        <div id="authConfirmRow" class="hidden">
+          <label for="authPass2">NHẬP LẠI MẬT KHẨU</label>
+          <input id="authPass2" type="password" autocomplete="new-password" placeholder="••••••">
+        </div>
+        <button id="authSubmitBtn">🔓 ĐĂNG NHẬP</button>
+        <div class="auth-msg" id="authMsg"></div>
+        <button class="auth-guest" id="authGuestBtn">🎮 CHƠI KHÔNG CẦN TÀI KHOẢN</button>
+        <p class="auth-note">Tài khoản lưu ngay trên máy bạn (localStorage) — điểm &amp; đồ đã mua sẽ tách riêng từng người.<br>Đăng ký sẽ mang theo điểm/đồ bạn đang có ở chế độ Khách.</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="../javascript/auth.js?v=1"></script>
+  <script src="../javascript/shop.js?v=9"></script>
+  <script src="../javascript/game.js?v=18"></script>
 </body>
 </html>
