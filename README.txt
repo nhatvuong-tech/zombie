@@ -56,17 +56,22 @@ TÀI KHOẢN / ĐĂNG NHẬP (AUTH):
 - Tiếng kêu zombie: anh/anhtiengkeuzombie.mp3 phát ngẫu nhiên mỗi 9-21 giây khi có quái gần,
   mỗi lần random volume + tốc độ cho tự nhiên.
 - Nút "🔊 ÂM THANH" trên HUD để bật/tắt cả nhạc + tiếng kêu, lưu lựa chọn vào localStorage (lastDayMuted).
-- Ảnh trạm cứu trợ: anh/tram-cuu-tro.png vẽ tại Trạm Cứu Trợ cuối mỗi màn, NHỎ KHI CÒN XA và
-  TO DẦN + RÕ DẦN theo đúng chiều người chơi chạy tới (cảm giác lao về phía trạm).
-  LƯU Ý: ảnh này đối xứng ~91% nên lật ngang nhìn gần như không đổi — muốn đổi chiều thì bấm
-  PHÍM F khi đang chơi hoặc nút "🔀 LẬT ẢNH TRẠM CỨU TRỢ" trong menu Tạm Dừng (lưu vào localStorage).
+- Ảnh trạm cứu trợ: anh/tram-cuu-tro_rotated.png (bản xoay đúng chiều 941x1672) vẽ tại Trạm
+  Cứu Trợ cuối mỗi màn, NHỎ KHI CÒN XA và TO DẦN + RÕ DẦN theo đúng chiều người chơi chạy tới.
   Nếu ảnh không nạp được thì tự vẽ lều cứu trợ cũ.
 
 MÀN ĐẶC BIỆT - GIẢI MÃ MẬT KHẨU TRẠM (mỗi 3 màn: 3, 6, 9...):
 - Màn đặc biệt có nhãn "🔐" ở HUD; chạy tới trạm sẽ gặp modal "CỬA TRẠM BỊ KHOÁ".
-- Mật khẩu là một từ 3-4 chữ (SOS, SAVE, HOME, HELP...) hiện dưới dạng MÃ SỐ A=1..Z=26,
-  kèm độ dài từ + gợi ý nghĩa tiếng Việt. Giải đúng -> nhận chìa khóa, +150 điểm, vào trạm bình thường.
-- Mỗi lần sai: mất 10+ HP (càng sai càng mất nhiều), đọc mã rồi thử lại. HP về 0 = chết ngay tại cửa.
+- Mật khẩu là một từ 3-4 chữ (SOS, SAVE, HOME, HELP...) được mã hóa theo 1 trong 4 LOẠI MÃ
+  (random mỗi lần, không lặp loại liền kề):
+  • MÃ SỐ: vị trí bảng chữ cái A=1...Z=26 (vd 8-5-12-16 = HELP) — 35 giây
+  • MÃ DỊCH CHỮ: mỗi chữ bị dịch +3 (vd HELP -> KHOS), dịch lùi 3 để giải — 35 giây
+  • MÃ ĐẢO NGƯỢC: từ bị viết ngược (vd PLEH), đọc phải sang trái — 22 giây
+  • MÃ MORSE: các ký tự • và − kèm bảng morse A-Z ngay trong modal — 45 giây
+- Đồng hồ giải mã ⏱ chạy ngay khi mở cửa: còn ≤10 giây chuyển đỏ + nhấp nháy.
+- Giải đúng: nhận chìa khóa, +150 điểm CỘNG 5 điểm/giây còn lại (giải nhanh thưởng cao).
+- Trả lời sai: mất 10+ HP mỗi lần (càng sai càng đau), đồng hồ vẫn chạy.
+- HẾT GIỜ: mất 30 HP (HP thấp = chết ngay tại cửa) + vào trạm TRỄ: chỉ còn 50% thưởng màn.
 
 CỬA HÀNG SINH TỒN (SHOP) - ĐIỂM TÍCH LŨY:
 - Điểm sau mỗi ván được quy đổi tự động: ĐIỂM NHẬN = sàn(Điểm ván / 5). Ví dụ 1.500 điểm -> 300 điểm tích lũy.

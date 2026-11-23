@@ -60,12 +60,16 @@ footer{padding:30px 7%;display:flex;justify-content:space-between;align-items:ce
 .hud-btns #soundBtn{background:#0f1d17;border-color:#54e99a;color:#c9ffe0;white-space:nowrap}
 
 /* ---------- GIẢI MÃ MẬT KHẨU TRẠM (MÀN ĐẶC BIỆT) ---------- */
-.lock-menu{width:min(460px,94vw);text-align:center}
+.lock-menu{width:min(520px,96vw);text-align:center}
 .lock-badge{display:inline-block;background:#2b1d0c;border:1px solid #ffd76a;color:#ffd76a;font-weight:800;letter-spacing:1.5px;border-radius:22px;padding:7px 20px;font-size:14px;box-shadow:0 0 22px rgba(255,215,106,.25)}
+.lock-timer{margin:10px 0 2px;font:800 26px 'Barlow Condensed',sans-serif;letter-spacing:2px;color:#8cf0a7;text-shadow:0 0 16px rgba(140,240,167,.4)}
+.lock-timer.danger{color:#ff6b6b;text-shadow:0 0 18px rgba(255,80,80,.55);animation:lockPulse .5s infinite alternate}
+@keyframes lockPulse{from{transform:scale(1)}to{transform:scale(1.08)}}
 .lock-code-box{margin:16px 0;padding:14px;background:#0e2018;border:1px dashed #3f7a5b;border-radius:12px}
 .lock-len{font-size:11px;font-weight:800;letter-spacing:2px;color:#7f9b8c}
-.lock-code{font:800 30px 'Consolas',monospace;letter-spacing:5px;color:#8cf0a7;margin:8px 0;text-shadow:0 0 18px rgba(140,240,167,.45)}
-.lock-ruler{font-size:10px;color:#6f8a7c;line-height:1.7;letter-spacing:.5px}
+.lock-code{font:800 28px 'Consolas',monospace;letter-spacing:4px;color:#8cf0a7;margin:8px 0;text-shadow:0 0 18px rgba(140,240,167,.45);word-break:break-word}
+.lock-ruler{font-size:10.5px;color:#8fb3a2;line-height:1.7;letter-spacing:.5px;word-break:break-word}
+#lockType{font-size:15px;color:#c8f5d9;font-weight:700;letter-spacing:1px;margin:6px 0}
 .lock-hint{margin-top:8px;font-size:13px;color:#ffd76a;font-weight:700}
 #lockInput{width:82%;padding:13px;margin:6px 0 10px;background:#0b1712;border:1px solid #2b4738;border-radius:10px;color:#e8f7ed;font-size:18px;font-weight:800;letter-spacing:6px;text-align:center;text-transform:uppercase;outline:none;transition:.15s}
 #lockInput:focus{border-color:#ffd76a;box-shadow:0 0 16px rgba(255,215,106,.25)}

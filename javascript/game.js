@@ -122,23 +122,11 @@ loadSprite("right", zombieSprites, "zombie_right.png", _spriteDone);
 
 // ─── Ảnh Trạm Cứu Trợ ───────────────────────────────────────────
 let stationImg = null;
-// Chiều trạm (true = lật ngang theo chiều chạy). Bấm phím F hoặc nút trong menu Tạm Dừng để đổi
-let stationFlip = (function () {
-  try { return localStorage.getItem("lastDayStationFlip") !== "0"; } catch (e) { return true; }
-})();
-
-function toggleStationFlip() {
-  stationFlip = !stationFlip;
-  try { localStorage.setItem("lastDayStationFlip", stationFlip ? "1" : "0"); } catch (e) {}
-  showMessage(stationFlip ? "🔀 TRẠM: chiều LẬT NGANG (theo chiều chạy)" : "🔀 TRẠM: chiều GỐC");
-  addFloatingText(player.x, player.y - 40, "🔀 ĐÃ ĐỔI CHIỀU TRẠM!", "#ffd76a");
-}
-
 (function () {
   const img = new Image();
   img.onload = () => { stationImg = img; };
   img.onerror = () => { /* giữ hình vẽ cũ */ };
-  img.src = "../anh/tram-cuu-tro.png";
+  img.src = "../anh/tram-cuu-tro_rotated.png";
 })();
 
 // ─── Âm thanh: nhạc nền + tiếng kêu zombie ──────────────────────
@@ -527,12 +515,12 @@ function reachShelter() {
   completeShelterArrival();
 }
 
-// Phần thưởng + hồi máu sau khi vào được trạm
-function completeShelterArrival() {
+// Phần thưởng + hồi máu sau khi vào được trạm (isLate = vào trễ do hết giờ giải mã)
+function completeShelterArrival(isLate) {
   // Hồi phục 100% máu & thể lực
   health = maxHealth;
   stamina = 100;
-  const bonus = wave * 350;
+  const bonus = wave * (isLate ? 175 : 350); // vào trễ chỉ được một nửa thưởng màn
   score += bonus;
   updateHUD();
 
@@ -544,9 +532,11 @@ function completeShelterArrival() {
   const shelterDesc = $("shelterDesc");
   const shelterBonus = $("shelterBonus");
 
-  if (shelterTitle) shelterTitle.textContent = "🎉 ĐÃ TỚI TRẠM CỨU TRỢ!";
-  if (shelterDesc) shelterDesc.textContent = "Bạn đã vượt qua chặng chạy tử thần tới " + getShelterName(wave) + "! Quân nhu và máu đã nạp đầy 100%.";
-  if (shelterBonus) shelterBonus.textContent = "+" + bonus + " PTS";
+  if (shelterTitle) shelterTitle.textContent = isLate ? "⚠️ VÀO TRẠM QUÁ TRỄ!" : "🎉 ĐÃ TỚI TRẠM CỨU TRỢ!";
+  if (shelterDesc) shelterDesc.textContent = isLate
+    ? "Bạn giải mã trễ, cổng chỉ mở khẩn cấp khi bầy zombie đã áp sát! Máu hồi đầy nhưng thưởng màn bị giảm một nửa."
+    : "Bạn đã vượt qua chặng chạy tử thần tới " + getShelterName(wave) + "! Quân nhu và máu đã nạp đầy 100%.";
+  if (shelterBonus) shelterBonus.textContent = "+" + bonus + " PTS" + (isLate ? " (trễ giờ -50%)" : "");
 
   shelterCountdown = 3;
   const countText = $("countdownText");
@@ -594,26 +584,123 @@ function pickLockWord() {
   return cand;
 }
 
-// Mã hóa: A=1, B=2 ... Z=26
-function letterCode(word) {
-  return word.split("").map(ch => String(ch.charCodeAt(0) - 64)).join(" - ");
+// ─── MÃ HÓA: 4 loại mã ngẫu nhiên + đồng hồ giải mã ────────────
+const LOCK_TYPES = [
+  { id: "number", name: "MÃ SỐ (A=1 → Z=26)", time: 35 },
+  { id: "caesar", name: "MÃ DỊCH CHỮ (+3)", time: 35 },
+  { id: "reverse", name: "MÃ ĐẢO NGƯỢC", time: 22 },
+  { id: "morse", name: "MÃ MORSE (• −)", time: 45 }
+];
+const ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const MORSE = {
+  A: "•−", B: "−•••", C: "−•−•", D: "−••", E: "•", F: "••−•", G: "−−•", H: "••••",
+  I: "••", J: "•−−−", K: "−•−", L: "•−••", M: "−−", N: "−•", O: "−−−", P: "•−−•",
+  Q: "−−•−", R: "•−•", S: "•••", T: "−", U: "••−", V: "•••−", W: "•−−", X: "−••−",
+  Y: "−•−−", Z: "−−••"
+};
+
+let lockType = "number";
+let lastLockType = "";
+let lockTimer = 0;
+let lockInterval = null;
+
+function pickLockType() {
+  let t;
+  do {
+    t = LOCK_TYPES[Math.floor(Math.random() * LOCK_TYPES.length)];
+  } while (t.id === lastLockType && LOCK_TYPES.length > 1);
+  lastLockType = t.id;
+  return t;
+}
+
+// Biến mật khẩu thành chuỗi mã theo loại
+function encodeLock(word, type) {
+  if (type === "caesar") {
+    const enc = word.split("").map(c => ALPHA[(ALPHA.indexOf(c) + 3) % 26]).join("");
+    return {
+      code: enc.split("").join(" "),
+      ruler: "Mỗi chữ đã bị DỊCH THÊM 3 vị trí trong bảng chữ cái (A→D, B→E... vượt Z quay về A). Dịch LÙI 3 vị trí để tìm mật khẩu gốc!"
+    };
+  }
+  if (type === "reverse") {
+    return {
+      code: word.split("").reverse().join(""),
+      ruler: "Chuỗi mã trên là mật khẩu bị VIẾT NGƯỢC — hãy đọc từ PHẢI sang TRÁI!"
+    };
+  }
+  if (type === "morse") {
+    return {
+      code: word.split("").map(c => MORSE[c]).join("   /   "),
+      ruler: "MÃ MORSE: " + ALPHA.split("").map(c => c + "=" + MORSE[c]).join("  ")
+    };
+  }
+  // mặc định: mã số
+  return {
+    code: word.split("").map(c => String(ALPHA.indexOf(c) + 1)).join(" - "),
+    ruler: "Mã hóa theo vị trí bảng chữ cái: A=1  B=2  C=3 ... Z=26"
+  };
+}
+
+function stopLockTimer() {
+  if (lockInterval) { clearInterval(lockInterval); lockInterval = null; }
+}
+
+function updateLockTimerDisplay() {
+  const el = $("lockTimer");
+  if (!el) return;
+  el.textContent = "⏱ " + Math.max(0, lockTimer) + " GIÂY";
+  el.classList.toggle("danger", lockTimer <= 10);
 }
 
 function startLockPuzzle() {
   lockWord = pickLockWord();
   lockFailed = 0;
+  const type = pickLockType();
+  lockType = type.id;
+  const enc = encodeLock(lockWord.w, type.id);
+
+  const typeEl = $("lockType");
   const codeEl = $("lockCode");
+  const rulerEl = $("lockRuler");
   const hintEl = $("lockHint");
   const lenEl = $("lockLen");
   const msgEl = $("lockMsg");
   const inputEl = $("lockInput");
-  if (codeEl) codeEl.textContent = letterCode(lockWord.w);
+
+  if (typeEl) typeEl.textContent = "🎯 " + type.name;
+  if (codeEl) codeEl.textContent = enc.code;
+  if (rulerEl) rulerEl.textContent = enc.ruler;
   if (hintEl) hintEl.textContent = "💡 Gợi ý: " + lockWord.hint;
   if (lenEl) lenEl.textContent = lockWord.w.length + " CHỮ";
-  if (msgEl) { msgEl.textContent = "Nhập từ khóa để nhận CHÌA KHÓA vào trạm!"; msgEl.className = "lock-msg"; }
+  if (msgEl) { msgEl.textContent = "Giải mã trước khi hết giờ để nhận CHÌA KHÓA!"; msgEl.className = "lock-msg"; }
   if (inputEl) { inputEl.value = ""; inputEl.focus(); }
+
+  // Đồng hồ giải mã
+  stopLockTimer();
+  lockTimer = type.time;
+  updateLockTimerDisplay();
+  lockInterval = setInterval(() => {
+    lockTimer--;
+    updateLockTimerDisplay();
+    if (lockTimer <= 0) {
+      stopLockTimer();
+      onLockTimeout();
+    }
+  }, 1000);
+
   show("lockModal");
   shakeTimer = 0.2;
+}
+
+// Hết giờ: bầy zombie tràn tới, cổng mở khẩn cấp — mất HP (có thể chết) + mất 50% thưởng màn
+function onLockTimeout() {
+  const dmg = damagePlayer(30);
+  hide("lockModal");
+  shakeTimer = 0.45;
+  updateHUD();
+  if (health <= 0) { endGame(); return; }
+  addFloatingText(player.x, player.y - 45, "⚠️ HẾT GIỜ! TRÀN VÀO TRẠM (-" + dmg + " HP, -50% thưởng)!", "#ff8080");
+  completeShelterArrival(true);
 }
 
 function submitLockAnswer() {
@@ -626,25 +713,29 @@ function submitLockAnswer() {
     return;
   }
   if (answer === lockWord.w) {
+    stopLockTimer();
     hide("lockModal");
-    score += 150;
-    addFloatingText(player.x, player.y - 30, "🔓 +150 ĐIỂM GIẢI MÃ!", "#ffea79");
+    const timeBonus = lockTimer > 0 ? Math.max(0, lockTimer) * 5 : 0; // giải nhanh được thưởng thêm
+    const total = 150 + timeBonus;
+    score += total;
+    addFloatingText(player.x, player.y - 30, "🔓 +" + total + " ĐIỂM GIẢI MÃ!", "#ffea79");
     updateHUD();
     completeShelterArrival();
     return;
   }
-  // Trả lời sai: mất 10 HP, thử lại
+  // Trả lời sai: mất HP, thử lại (đồng hồ vẫn chạy!)
   lockFailed++;
   const dmg = damagePlayer(10 + lockFailed * 2);
   shakeTimer = 0.25;
   updateHUD();
   if (health <= 0) {
+    stopLockTimer();
     hide("lockModal");
     endGame();
     return;
   }
   if (msgEl) {
-    msgEl.textContent = "❌ SAI! -" + dmg + " HP (lần " + lockFailed + "). Đọc mã A=1...Z=26 rồi thử lại!";
+    msgEl.textContent = "❌ SAI! -" + dmg + " HP (lần " + lockFailed + "). Xem lại dòng hướng dẫn bên trên!";
     msgEl.className = "lock-msg error";
   }
   if (inputEl) { inputEl.value = ""; inputEl.focus(); }
@@ -1100,14 +1191,7 @@ function drawShelterZone() {
     ctx.globalAlpha = 0.35 + 0.65 * near; // mờ khi xa, rõ dần khi lại gần
     ctx.shadowColor = "rgba(84, 233, 154, 0.55)";
     ctx.shadowBlur = 24;
-    if (stationFlip) {
-      // lật ngang: mặt trạm đón người chơi chạy sang phải
-      ctx.translate(stX + stW, stY);
-      ctx.scale(-1, 1);
-      ctx.drawImage(stationImg, 0, 0, stW, stH);
-    } else {
-      ctx.drawImage(stationImg, stX, stY, stW, stH);
-    }
+    ctx.drawImage(stationImg, stX, stY, stW, stH);
     ctx.restore();
 
     // Mũi tên cổng vào phía trái trạm - đúng chiều người chơi chạy tới
@@ -1511,6 +1595,7 @@ function endGame() {
   if (animationId) cancelAnimationFrame(animationId);
   stopBackgroundLoop();
   stopMusic();
+  stopLockTimer();
   if (shelterInterval) clearInterval(shelterInterval);
   hide("chaseWarning");
   hide("bossBarWrap");
@@ -1535,6 +1620,7 @@ function backToMenu() {
   gameRunning = false;
   paused = false;
   stopMusic();
+  stopLockTimer();
   if (animationId) cancelAnimationFrame(animationId);
   stopBackgroundLoop();
   if (shelterInterval) clearInterval(shelterInterval);
@@ -1562,8 +1648,6 @@ window.addEventListener("keydown", e => {
   if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].includes(e.key)) e.preventDefault();
   keys[e.key] = true;
   if (e.key === "Escape" && gameRunning) togglePause();
-  // F = lật chiều ảnh trạm cứu trợ
-  if ((e.key === "f" || e.key === "F") && gameRunning && !inShelter) toggleStationFlip();
 });
 window.addEventListener("keyup", e => { keys[e.key] = false; });
 window.addEventListener("blur", () => { keys = {}; });
@@ -1596,7 +1680,6 @@ on("gameOverMenuBtn", backToMenu);
 on("soundBtn", () => setSoundMuted(!soundMuted));
 (function initSoundLabel() { setSoundMuted(soundMuted); })();
 on("lockSubmitBtn", submitLockAnswer);
-on("flipStationBtn", () => { if (gameRunning) toggleStationFlip(); });
 (function () {
   const li = $("lockInput");
   if (li) li.addEventListener("keydown", e => { if (e.key === "Enter") submitLockAnswer(); });
