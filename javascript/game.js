@@ -30,6 +30,7 @@ let waveStartX = 0;
 let waveDistance = 2500;
 let goalX = 0;
 let inShelter = false;
+let atStationLock = false; // đang đứng giải mã cửa trạm (màn đặc biệt): đứng im nhưng vẫn bắn
 let shelterCountdown = 3;
 let shelterInterval = null;
 let shakeTimer = 0;
@@ -198,6 +199,7 @@ function startGame() {
   health = maxHealth;
   stamina = 100;
   inShelter = false;
+  atStationLock = false;
   shakeTimer = 0;
   paused = false;
 
@@ -489,11 +491,27 @@ function explodeAt(x, y, radius, damage, isBarrel = false) {
 
 // ─── Đến Trạm Cứu Trợ ──────────────────────────────────────────
 function reachShelter() {
+  if (atStationLock || inShelter) return;
+
+  // MÀN ĐẶC BIỆT: cửa trạm bị khoá — KHÔNG dừng game!
+  // Nhân vật đứng im tại cổng, zombie vẫn tràn tới và vẫn bị tự động bắn.
+  // Giải mã xong mới được vào. Hết giờ không giải được = THUA.
+  if (isSpecialWave(wave)) {
+    atStationLock = true;
+    hide("bossBarWrap");
+    startLockPuzzle();
+    return;
+  }
+
   inShelter = true;
   hide("chaseWarning");
   hide("bossBarWrap");
+  stationDefenseSweep();
+  completeShelterArrival();
+}
 
-  // Hệ thống phòng thủ tự động của Trạm Cứu Trợ quét sạch toàn bộ zombie
+// Hệ thống phòng thủ tự động của Trạm Cứu Trợ quét sạch toàn bộ zombie
+function stationDefenseSweep() {
   zombies.forEach(z => {
     addParticle(z.x, z.y, "#ff3333", 12);
     particles.push({
@@ -506,13 +524,6 @@ function reachShelter() {
   zombies = [];
   acidProjectiles = [];
   boss = null;
-
-  // MÀN ĐẶC BIỆT: phải giải mã mật khẩu mới có chìa khóa vào trạm
-  if (isSpecialWave(wave)) {
-    startLockPuzzle();
-    return;
-  }
-  completeShelterArrival();
 }
 
 // Phần thưởng + hồi máu sau khi vào được trạm (isLate = vào trễ do hết giờ giải mã)
@@ -692,15 +703,14 @@ function startLockPuzzle() {
   shakeTimer = 0.2;
 }
 
-// Hết giờ: bầy zombie tràn tới, cổng mở khẩn cấp — mất HP (có thể chết) + mất 50% thưởng màn
+// Hết giờ không giải được: bầy zombie đã vây kín cổng -> THUA
 function onLockTimeout() {
-  const dmg = damagePlayer(30);
+  stopLockTimer();
+  atStationLock = false;
   hide("lockModal");
-  shakeTimer = 0.45;
-  updateHUD();
-  if (health <= 0) { endGame(); return; }
-  addFloatingText(player.x, player.y - 45, "⚠️ HẾT GIỜ! TRÀN VÀO TRẠM (-" + dmg + " HP, -50% thưởng)!", "#ff8080");
-  completeShelterArrival(true);
+  addFloatingText(player.x, player.y - 45, "💀 HẾT GIỜ! CỬA KHÔNG MỞ — THUA CUỘC!", "#ff8080");
+  shakeTimer = 0.5;
+  endGame();
 }
 
 function submitLockAnswer() {
@@ -714,22 +724,28 @@ function submitLockAnswer() {
   }
   if (answer === lockWord.w) {
     stopLockTimer();
+    atStationLock = false;
     hide("lockModal");
     const timeBonus = lockTimer > 0 ? Math.max(0, lockTimer) * 5 : 0; // giải nhanh được thưởng thêm
     const total = 150 + timeBonus;
     score += total;
     addFloatingText(player.x, player.y - 30, "🔓 +" + total + " ĐIỂM GIẢI MÃ!", "#ffea79");
     updateHUD();
+    // Mở khóa xong: phòng thủ trạm quét sạch bầy zombie còn lại rồi vào trạm
+    stationDefenseSweep();
+    hide("chaseWarning");
+    inShelter = true;
     completeShelterArrival();
     return;
   }
-  // Trả lời sai: mất HP, thử lại (đồng hồ vẫn chạy!)
+  // Trả lời sai: mất HP, thử lại (đồng hồ vẫn chạy, zombie vẫn đang lao tới!)
   lockFailed++;
   const dmg = damagePlayer(10 + lockFailed * 2);
   shakeTimer = 0.25;
   updateHUD();
   if (health <= 0) {
     stopLockTimer();
+    atStationLock = false;
     hide("lockModal");
     endGame();
     return;
@@ -774,6 +790,10 @@ function update(dt) {
   }
 
   // 1. Quản lý Thể Lực (Stamina) & Di chuyển của Người Chơi
+  // Khi đang giải mã cửa trạm: NHÂN VẬT ĐỨNG IM nhưng vẫn tự bắn zombie
+  if (atStationLock) {
+    player.dir = "right";
+  } else {
   let isSprinting = (keys.d || keys.D || keys.ArrowRight);
   let isSlowing = (keys.a || keys.A || keys.ArrowLeft);
   let currentSpeed = player.baseSpeed;
@@ -816,9 +836,10 @@ function update(dt) {
   // Camera mượt theo nhân vật
   const targetCam = player.x - W * 0.28;
   cameraX += (targetCam - cameraX) * 6 * dt;
+  } // hết khối di chuyển (atStationLock = đứng im)
 
   // Kiểm tra về đích Trạm Cứu Trợ
-  if (!inShelter && player.x >= goalX) {
+  if (!inShelter && !atStationLock && player.x >= goalX) {
     reachShelter();
     return;
   }
@@ -1593,6 +1614,8 @@ function angleToDirection(angle) {
 
 function endGame() {
   gameRunning = false;
+  paused = false;
+  atStationLock = false;
   if (animationId) cancelAnimationFrame(animationId);
   stopBackgroundLoop();
   stopMusic();
@@ -1620,6 +1643,7 @@ function endGame() {
 function backToMenu() {
   gameRunning = false;
   paused = false;
+  atStationLock = false;
   stopMusic();
   stopLockTimer();
   if (animationId) cancelAnimationFrame(animationId);
@@ -1632,7 +1656,7 @@ function backToMenu() {
 }
 
 function togglePause() {
-  if (!gameRunning || inShelter) return;
+  if (!gameRunning || inShelter || atStationLock) return; // đang giải mã thì không được tạm dừng
   paused = !paused;
   paused ? show("pauseMenu") : hide("pauseMenu");
   $("pauseBtn").textContent = paused ? "▶ TIẾP TỤC" : "Ⅱ TẠM DỪNG";

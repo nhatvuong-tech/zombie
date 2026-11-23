@@ -62,7 +62,10 @@ TÀI KHOẢN / ĐĂNG NHẬP (AUTH):
   Nếu ảnh không nạp được thì tự vẽ lều cứu trợ cũ.
 
 MÀN ĐẶC BIỆT - GIẢI MÃ MẬT KHẨU TRẠM (mỗi 3 màn: 3, 6, 9...):
-- Màn đặc biệt có nhãn "🔐" ở HUD; chạy tới trạm sẽ gặp modal "CỬA TRẠM BỊ KHOÁ".
+- Màn đặc biệt có nhãn "🔐" ở HUD; chạy tới trạm gặp modal "CỬA TRẠM BỊ KHOÁ".
+- KHI GIẢI MÃ GAME KHÔNG DỪNG: nhân vật ĐỨNG IM tại cổng, zombie vẫn tràn tới từ 2 phía
+  và vẫn bị TỰ ĐỘNG BẮN. Bị zombie cắn mất máu như bình thường — chết tại cửa = thua.
+  Không thể Tạm Dừng khi đang giải mã.
 - Mật khẩu là một từ 3-4 chữ (SOS, SAVE, HOME, HELP...) được mã hóa theo 1 trong 4 LOẠI MÃ
   (random mỗi lần, không lặp loại liền kề):
   • MÃ SỐ: vị trí bảng chữ cái A=1...Z=26 (vd 8-5-12-16 = HELP) — 35 giây
@@ -70,9 +73,10 @@ MÀN ĐẶC BIỆT - GIẢI MÃ MẬT KHẨU TRẠM (mỗi 3 màn: 3, 6, 9...):
   • MÃ ĐẢO NGƯỢC: từ bị viết ngược (vd PLEH), đọc phải sang trái — 22 giây
   • MÃ MORSE: các ký tự • và − kèm bảng morse A-Z ngay trong modal — 45 giây
 - Đồng hồ giải mã ⏱ chạy ngay khi mở cửa: còn ≤10 giây chuyển đỏ + nhấp nháy.
-- Giải đúng: nhận chìa khóa, +150 điểm CỘNG 5 điểm/giây còn lại (giải nhanh thưởng cao).
+- Giải đúng: nhận chìa khóa, +150 điểm CỘNG 5 điểm/giây còn lại; trạm quét sạch zombie,
+  hồi máu đầy và vào trạm bình thường.
 - Trả lời sai: mất 10+ HP mỗi lần (càng sai càng đau), đồng hồ vẫn chạy.
-- HẾT GIỜ: mất 30 HP (HP thấp = chết ngay tại cửa) + vào trạm TRỄ: chỉ còn 50% thưởng màn.
+- HẾT GIỜ KHÔNG GIẢI ĐƯỢC = THUA (Game Over ngay tại cổng).
 
 CỬA HÀNG SINH TỒN (SHOP) - ĐIỂM TÍCH LŨY:
 - Điểm sau mỗi ván được quy đổi tự động: ĐIỂM NHẬN = sàn(Điểm ván / 5). Ví dụ 1.500 điểm -> 300 điểm tích lũy.
