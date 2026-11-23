@@ -138,6 +138,25 @@
         <button id="nextWaveBtn">▶ TIẾP TỤC CHẠY SANG MÀN KẾ TIẾP (<span id="countdownText">3s</span>)</button>
       </div>
     </div>
+
+    <!-- Màn đặc biệt: giải mã mật khẩu để có chìa khóa vào trạm -->
+    <div class="overlay hidden" id="lockModal">
+      <div class="menu lock-menu">
+        <div class="lock-badge">🔐 CỬA TRẠM BỊ KHOÁ!</div>
+        <h1 class="green">GIẢI MÃ ĐỂ NHẬN CHÌA KHÓA</h1>
+        <p class="subtitle">Trạm cứu trợ bị phong tỏa! Giải mã mật khẩu để nhận chìa khóa vào trạm.</p>
+        <div class="lock-code-box">
+          <div class="lock-len" id="lockLen">4 CHỮ</div>
+          <div class="lock-code" id="lockCode">19 - 15 - 19</div>
+          <div class="lock-ruler">A=1 B=2 C=3 D=4 E=5 F=6 G=7 H=8 I=9 J=10 K=11 L=12 M=13 N=14 O=15 P=16 Q=17 R=18 S=19 T=20 U=21 V=22 W=23 X=24 Y=25 Z=26</div>
+          <div class="lock-hint" id="lockHint">💡 Gợi ý: ...</div>
+        </div>
+        <input id="lockInput" maxlength="8" placeholder="NHẬP MẬT KHẨU..." autocomplete="off">
+        <button id="lockSubmitBtn">🔓 MỞ KHÓA TRẠM</button>
+        <div class="lock-msg" id="lockMsg">Nhập từ khóa để nhận CHÌA KHÓA vào trạm!</div>
+        <p class="lock-warn">⚠️ Mỗi lần sai mất 10+ HP — xác sống vẫn đang lảng vảng quanh đây!</p>
+      </div>
+    </div>
     <div class="overlay hidden" id="mainMenu"><div class="menu"><div class="logo">LAST DAY</div><h2>ZOMBIE SURVIVAL</h2><p class="subtitle">THE CITY HAS FALLEN.<br>HOW LONG CAN YOU SURVIVE?</p><button id="unusedPlayBtn">▶ PLAY NOW</button><div class="game-info">BEST SCORE: <span id="bestScore">0</span><br>VERSION 1.0</div></div></div>
     <div class="overlay hidden" id="guide"><div class="menu guide-menu"><h2 class="green">CẨM NANG SINH TỒN & CÁC LOẠI ZOMBIE</h2><div class="guide-scrollable"><p class="subtitle guide-text">🏃 <strong>Lối chơi:</strong> Mỗi màn là một chặng chạy sinh tồn từ trái sang phải để tới <strong>TRẠM CỨU TRỢ</strong> an toàn!<br><br>⌨️ <strong>ĐIỀU KHIỂN & THỂ LỰC:</strong><br>• <strong>D / ➡:</strong> Tăng tốc (Sprint) - <em>tiêu hao thể lực ⚡, nhả phím để hồi lại</em>.<br>• <strong>A / ⬅:</strong> Chạy chậm để căn bắn bầy quái trước mặt.<br>• <strong>W / S / ⬆ / ⬇:</strong> Đổi làn lên/xuống né đòn, né chướng ngại vật & vũng độc.<br><br>🧟 <strong>CÁC CHỦNG LOẠI ZOMBIE NGUY HIỂM:</strong><br>• 🧟 <strong>Walker (Thường):</strong> Lang thang đông đảo, rượt đuổi căn bản.<br>• ⚡ <strong>Runner (Điên cuồng - Mắt đỏ):</strong> Tốc độ cực nhanh, rượt đuổi sát nút sau lưng!<br>• 🧪 <strong>Spitter (Phun Axit):</strong> Khạc bọc độc xanh từ xa, trúng độc bị làm chậm và trừ máu!<br>• 💣 <strong>Exploder (Phát nổ - Quầng cam):</strong> Nổ tung khi chết hoặc khi lại gần, gây sát thương diện rộng!<br>• 🦎 <strong>Crawler (Trườn bò):</strong> Luồn lách sát đất rất khó ngắm, áp sát bất ngờ.<br>• 🦍 <strong>Tanker / Brute (Đột biến to lớn):</strong> Máu trâu, đập mất cực nhiều máu!<br>• 👑 <strong>Boss Zombie:</strong> Xuất hiện ở wave cao, lượng máu khổng lồ và gầm rú triệu hồi đệ!<br><br>📦 <strong>TIẾP TẾ TRÊN ĐƯỜNG:</strong><br>• ❤️ <strong>Túi Cứu Trợ:</strong> Hồi +25 HP.<br>• ⚡ <strong>Hộp Đạn Cường Hóa:</strong> Bắn chùm 3 tia đạn cực mạnh trong 6 giây!<br>• 🛢️ <strong>Thùng Xăng:</strong> Bắn nổ để quét sạch bầy zombie xung quanh!</p></div><button id="closeGuideBtn">ĐÃ HIỂU - CHIẾN THÔI</button></div></div>
     <div class="overlay hidden" id="pauseMenu">
@@ -214,6 +233,6 @@
 
   <script src="../javascript/auth.js?v=2"></script>
   <script src="../javascript/shop.js?v=10"></script>
-  <script src="../javascript/game.js?v=20"></script>
+  <script src="../javascript/game.js?v=21"></script>
 </body>
 </html>

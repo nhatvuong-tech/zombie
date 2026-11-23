@@ -53,11 +53,19 @@ TÀI KHOẢN / ĐĂNG NHẬP (AUTH):
 ÂM THANH & ẢNH TRẠM CỨU TRỢ:
 - Nhạc nền: anh/nhacgame.mp3 tự chạy khi bấm CHƠI NGAY / CHƠI LẠI (loop, volume 0.35),
   dừng khi Game Over / về menu. Trình duyệt chặn autoplay thì game vẫn chơi bình thường.
-- Tiếng kêu zombie: anh/anhtiengkeuzombie.mp3 phát ngẫu nhiên mỗi 2-6 giây khi có quái gần,
+- Tiếng kêu zombie: anh/anhtiengkeuzombie.mp3 phát ngẫu nhiên mỗi 9-21 giây khi có quái gần,
   mỗi lần random volume + tốc độ cho tự nhiên.
 - Nút "🔊 ÂM THANH" trên HUD để bật/tắt cả nhạc + tiếng kêu, lưu lựa chọn vào localStorage (lastDayMuted).
-- Ảnh trạm cứu trợ: anh/tram-cuu-tro.png (tên cũ f01e47d8-...png đã đổi tên) vẽ tại Trạm Cứu Trợ
-  cuối mỗi màn, kèm quầng sáng xanh. Nếu ảnh không nạp được thì tự vẽ lều cứu trợ cũ.
+- Ảnh trạm cứu trợ: anh/tram-cuu-tro.png vẽ tại Trạm Cứu Trợ cuối mỗi màn, LẬT NGANG đúng chiều
+  người chơi chạy (trái -> phải) + mũi tên nhấp nháy "VÀO TRẠM" ở cổng bên trái.
+  Muốn đổi chiều lại: tìm STATION_FLIP trong game.js đặt false.
+  Nếu ảnh không nạp được thì tự vẽ lều cứu trợ cũ.
+
+MÀN ĐẶC BIỆT - GIẢI MÃ MẬT KHẨU TRẠM (mỗi 3 màn: 3, 6, 9...):
+- Màn đặc biệt có nhãn "🔐" ở HUD; chạy tới trạm sẽ gặp modal "CỬA TRẠM BỊ KHOÁ".
+- Mật khẩu là một từ 3-4 chữ (SOS, SAVE, HOME, HELP...) hiện dưới dạng MÃ SỐ A=1..Z=26,
+  kèm độ dài từ + gợi ý nghĩa tiếng Việt. Giải đúng -> nhận chìa khóa, +150 điểm, vào trạm bình thường.
+- Mỗi lần sai: mất 10+ HP (càng sai càng mất nhiều), đọc mã rồi thử lại. HP về 0 = chết ngay tại cửa.
 
 CỬA HÀNG SINH TỒN (SHOP) - ĐIỂM TÍCH LŨY:
 - Điểm sau mỗi ván được quy đổi tự động: ĐIỂM NHẬN = sàn(Điểm ván / 5). Ví dụ 1.500 điểm -> 300 điểm tích lũy.

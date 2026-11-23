@@ -170,14 +170,14 @@ function stopMusic() {
   if (bgMusic) { try { bgMusic.pause(); } catch (e) {} }
 }
 
-// Kêu ngẫu nhiên khi có zombie gần
+// Kêu ngẫu nhiên khi có zombie gần (thưa, đỡ ồn)
 function playZombieGrowl() {
   if (soundMuted || !zombieGroan) return;
   const near = zombies && zombies.some(z => !z.dead && Math.abs(z.x - player.x) < W * 0.75);
   if (!near) return;
   try {
     const s = zombieGroan.cloneNode();
-    s.volume = 0.22 + Math.random() * 0.26;
+    s.volume = 0.14 + Math.random() * 0.18;
     s.playbackRate = 0.85 + Math.random() * 0.3;
     const p = s.play();
     if (p && p.catch) p.catch(() => {});
@@ -259,7 +259,7 @@ function initWave(waveNum, startX) {
 
   hide("bossBarWrap");
   const stationEl = $("targetStationName");
-  if (stationEl) stationEl.textContent = "🏥 " + getShelterName(wave);
+  if (stationEl) stationEl.textContent = (isSpecialWave(wave) ? "🔐 " : "🏥 ") + getShelterName(wave);
 
   // Sinh thùng xăng phát nổ dọc đường chạy
   const numBarrels = 4 + wave * 2;
@@ -507,6 +507,16 @@ function reachShelter() {
   acidProjectiles = [];
   boss = null;
 
+  // MÀN ĐẶC BIỆT: phải giải mã mật khẩu mới có chìa khóa vào trạm
+  if (isSpecialWave(wave)) {
+    startLockPuzzle();
+    return;
+  }
+  completeShelterArrival();
+}
+
+// Phần thưởng + hồi máu sau khi vào được trạm
+function completeShelterArrival() {
   // Hồi phục 100% máu & thể lực
   health = maxHealth;
   stamina = 100;
@@ -542,6 +552,92 @@ function reachShelter() {
   }, 1000);
 }
 
+// ─── MÀN ĐẶC BIỆT: GIẢI MÃ MẬT KHẨU TRẠM ────────────────────────
+// Mỗi 3 màn một lần (3, 6, 9...) cửa trạm bị khoá, phải giải mã để có chìa khóa
+function isSpecialWave(w) { return w > 0 && w % 3 === 0; }
+
+const LOCK_WORDS = [
+  { w: "SOS", hint: "Tín hiệu cứu nạn quốc tế" },
+  { w: "SAVE", hint: "Cứu lấy mạng sống" },
+  { w: "HOME", hint: "Nơi bình yên để về" },
+  { w: "LIFE", hint: "Sự sống còn" },
+  { w: "CURE", hint: "Liều thuốc cứu rỗi" },
+  { w: "HELP", hint: "Tiếng kêu cứu" },
+  { w: "EXIT", hint: "Lối thoát hiểm" },
+  { w: "SAFE", hint: "An toàn tuyệt đối" },
+  { w: "FOOD", hint: "Lương thực quý giá" },
+  { w: "CAMP", hint: "Trại của người sống sót" },
+  { w: "FORT", hint: "Pháo đài chống xác sống" },
+  { w: "ARMY", hint: "Đội quân cứu viện" }
+];
+
+let lockWord = null;
+let lockFailed = 0;
+
+function pickLockWord() {
+  let cand;
+  do {
+    cand = LOCK_WORDS[Math.floor(Math.random() * LOCK_WORDS.length)];
+  } while (lockWord && cand.w === lockWord.w && LOCK_WORDS.length > 1);
+  return cand;
+}
+
+// Mã hóa: A=1, B=2 ... Z=26
+function letterCode(word) {
+  return word.split("").map(ch => String(ch.charCodeAt(0) - 64)).join(" - ");
+}
+
+function startLockPuzzle() {
+  lockWord = pickLockWord();
+  lockFailed = 0;
+  const codeEl = $("lockCode");
+  const hintEl = $("lockHint");
+  const lenEl = $("lockLen");
+  const msgEl = $("lockMsg");
+  const inputEl = $("lockInput");
+  if (codeEl) codeEl.textContent = letterCode(lockWord.w);
+  if (hintEl) hintEl.textContent = "💡 Gợi ý: " + lockWord.hint;
+  if (lenEl) lenEl.textContent = lockWord.w.length + " CHỮ";
+  if (msgEl) { msgEl.textContent = "Nhập từ khóa để nhận CHÌA KHÓA vào trạm!"; msgEl.className = "lock-msg"; }
+  if (inputEl) { inputEl.value = ""; inputEl.focus(); }
+  show("lockModal");
+  shakeTimer = 0.2;
+}
+
+function submitLockAnswer() {
+  if (!lockWord) return;
+  const inputEl = $("lockInput");
+  const msgEl = $("lockMsg");
+  const answer = (inputEl ? inputEl.value : "").trim().toUpperCase().replace(/[^A-Z]/g, "");
+  if (!answer) {
+    if (msgEl) { msgEl.textContent = "Bạn chưa nhập mật khẩu!"; msgEl.className = "lock-msg error"; }
+    return;
+  }
+  if (answer === lockWord.w) {
+    hide("lockModal");
+    score += 150;
+    addFloatingText(player.x, player.y - 30, "🔓 +150 ĐIỂM GIẢI MÃ!", "#ffea79");
+    updateHUD();
+    completeShelterArrival();
+    return;
+  }
+  // Trả lời sai: mất 10 HP, thử lại
+  lockFailed++;
+  const dmg = damagePlayer(10 + lockFailed * 2);
+  shakeTimer = 0.25;
+  updateHUD();
+  if (health <= 0) {
+    hide("lockModal");
+    endGame();
+    return;
+  }
+  if (msgEl) {
+    msgEl.textContent = "❌ SAI! -" + dmg + " HP (lần " + lockFailed + "). Đọc mã A=1...Z=26 rồi thử lại!";
+    msgEl.className = "lock-msg error";
+  }
+  if (inputEl) { inputEl.value = ""; inputEl.focus(); }
+}
+
 function nextWave() {
   if (shelterInterval) clearInterval(shelterInterval);
   hide("shelterModal");
@@ -552,7 +648,11 @@ function nextWave() {
   initWave(nextWaveNum, newStartX);
 
   updateHUD();
-  showMessage("MÀN " + wave + ": " + getShelterName(wave) + " — XUẤT PHÁT!");
+  if (isSpecialWave(wave)) {
+    showMessage("MÀN " + wave + ": " + getShelterName(wave) + " 🔐 CỬA KHOÁ — GIẢI MÃ MẬT KHẨU ĐỂ VÀO!");
+  } else {
+    showMessage("MÀN " + wave + ": " + getShelterName(wave) + " — XUẤT PHÁT!");
+  }
 }
 
 // ─── Cập Nhật Game Loop (Update) ────────────────────────────────
@@ -563,10 +663,10 @@ function update(dt) {
     updateHUD();
   }
 
-  // 0b. Tiếng kêu zombie ngẫu nhiên khi có quái gần
+  // 0b. Tiếng kêu zombie ngẫu nhiên khi có quái gần (thưa hơn)
   growlTimer -= dt;
   if (growlTimer <= 0) {
-    growlTimer = 2.2 + Math.random() * 4.5;
+    growlTimer = 9 + Math.random() * 12; // mỗi 9-21 giây một lần
     playZombieGrowl();
   }
 
@@ -963,8 +1063,9 @@ function drawShelterZone() {
   ctx.fillText("🏕️ TRẠM CỨU TRỢ AN TOÀN", bx + 140, by + 28);
   ctx.restore();
 
-  // Ảnh trạm cứu trợ (nếu nạp được), vẽ to rõ bên phải vạch an toàn
+  // Ảnh trạm cứu trợ (nếu nạp được) — hướng theo chiều người chơi chạy (trái -> phải)
   if (stationImg) {
+    const STATION_FLIP = true; // đặt false nếu muốn đổi chiều trạm
     const stH = Math.min(H * 0.62, 300);
     const stW = stH * (stationImg.width / stationImg.height);
     const stX = gScreenX + 40;
@@ -979,7 +1080,33 @@ function drawShelterZone() {
     ctx.save();
     ctx.shadowColor = "rgba(84, 233, 154, 0.55)";
     ctx.shadowBlur = 24;
-    ctx.drawImage(stationImg, stX, stY, stW, stH);
+    if (STATION_FLIP) {
+      // lật ngang để mặt trạm đón người chơi chạy sang phải
+      ctx.translate(stX + stW, stY);
+      ctx.scale(-1, 1);
+      ctx.drawImage(stationImg, 0, 0, stW, stH);
+    } else {
+      ctx.drawImage(stationImg, stX, stY, stW, stH);
+    }
+    ctx.restore();
+
+    // Mũi tên cổng vào phía trái trạm - đúng chiều người chơi chạy tới
+    const pulse = 0.6 + Math.sin(performance.now() / 300) * 0.4;
+    const ax = stX - 46;
+    const ay = H / 2;
+    ctx.save();
+    ctx.globalAlpha = pulse;
+    ctx.fillStyle = "#7dffad";
+    ctx.beginPath();
+    ctx.moveTo(ax, ay - 16);
+    ctx.lineTo(ax + 26, ay);
+    ctx.lineTo(ax, ay + 16);
+    ctx.closePath();
+    ctx.fill();
+    ctx.globalAlpha = pulse * 0.5;
+    ctx.font = "bold 12px 'Rajdhani', sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("VÀO TRẠM", ax - 6, ay + 30);
     ctx.restore();
   } else {
     // Lều cứu trợ chữ thập đỏ (bản vẽ cũ khi chưa có ảnh)
@@ -1367,6 +1494,7 @@ function endGame() {
   if (shelterInterval) clearInterval(shelterInterval);
   hide("chaseWarning");
   hide("bossBarWrap");
+  hide("lockModal");
 
   // Quy đổi điểm của ván chơi thành điểm tích lũy (cửa hàng)
   const coinMul = equipStats ? equipStats.coinMul : 1;
@@ -1390,7 +1518,7 @@ function backToMenu() {
   if (animationId) cancelAnimationFrame(animationId);
   stopBackgroundLoop();
   if (shelterInterval) clearInterval(shelterInterval);
-  ["guide", "pauseMenu", "gameOver", "hud", "shelterModal", "bossBarWrap"].forEach(hide);
+  ["guide", "pauseMenu", "gameOver", "hud", "shelterModal", "bossBarWrap", "lockModal"].forEach(hide);
   hide("gameScreen");
   show("landingPage");
   $("mobileControls").style.display = "none";
@@ -1445,6 +1573,11 @@ on("menuBtn", backToMenu);
 on("gameOverMenuBtn", backToMenu);
 on("soundBtn", () => setSoundMuted(!soundMuted));
 (function initSoundLabel() { setSoundMuted(soundMuted); })();
+on("lockSubmitBtn", submitLockAnswer);
+(function () {
+  const li = $("lockInput");
+  if (li) li.addEventListener("keydown", e => { if (e.key === "Enter") submitLockAnswer(); });
+})();
 on("nextWaveBtn", () => {
   if (inShelter) {
     if (shelterInterval) clearInterval(shelterInterval);
