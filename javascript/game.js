@@ -122,6 +122,18 @@ loadSprite("right", zombieSprites, "zombie_right.png", _spriteDone);
 
 // ─── Ảnh Trạm Cứu Trợ ───────────────────────────────────────────
 let stationImg = null;
+// Chiều trạm (true = lật ngang theo chiều chạy). Bấm phím F hoặc nút trong menu Tạm Dừng để đổi
+let stationFlip = (function () {
+  try { return localStorage.getItem("lastDayStationFlip") !== "0"; } catch (e) { return true; }
+})();
+
+function toggleStationFlip() {
+  stationFlip = !stationFlip;
+  try { localStorage.setItem("lastDayStationFlip", stationFlip ? "1" : "0"); } catch (e) {}
+  showMessage(stationFlip ? "🔀 TRẠM: chiều LẬT NGANG (theo chiều chạy)" : "🔀 TRẠM: chiều GỐC");
+  addFloatingText(player.x, player.y - 40, "🔀 ĐÃ ĐỔI CHIỀU TRẠM!", "#ffd76a");
+}
+
 (function () {
   const img = new Image();
   img.onload = () => { stationImg = img; };
@@ -1063,12 +1075,19 @@ function drawShelterZone() {
   ctx.fillText("🏕️ TRẠM CỨU TRỢ AN TOÀN", bx + 140, by + 28);
   ctx.restore();
 
-  // Ảnh trạm cứu trợ (nếu nạp được) — hướng theo chiều người chơi chạy (trái -> phải)
+  // Ảnh trạm cứu trợ (nếu nạp được) — nhỏ khi còn xa, TO DẦN theo chiều chạy tới
   if (stationImg) {
-    const STATION_FLIP = true; // đặt false nếu muốn đổi chiều trạm
-    const stH = Math.min(H * 0.62, 300);
-    const stW = stH * (stationImg.width / stationImg.height);
-    const stX = gScreenX + 40;
+    const remain = Math.max(0, goalX - player.x);
+    const near = Math.max(0, Math.min(1, 1 - remain / 1500)); // 0 = còn xa, 1 = tới nơi
+    const scaleNear = 0.35 + 0.65 * (1 - Math.pow(1 - near, 2));
+    let stH = Math.min(H * 0.62, 300) * scaleNear;
+    let stW = stH * (stationImg.width / stationImg.height);
+    let stX = gScreenX + 40;
+    // không để trạm tràn khỏi màn hình
+    if (stX + stW > W - 24) {
+      const k = (W - 24 - stX) / stW;
+      if (k > 0.2) { stW *= k; stH *= k; }
+    }
     const stY = (H - stH) / 2;
     // vùng sáng phía sau trạm
     const glow = ctx.createRadialGradient(stX + stW / 2, stY + stH / 2, 20, stX + stW / 2, stY + stH / 2, stW / 1.4);
@@ -1078,10 +1097,11 @@ function drawShelterZone() {
     ctx.fillRect(stX - 60, stY - 40, stW + 120, stH + 80);
 
     ctx.save();
+    ctx.globalAlpha = 0.35 + 0.65 * near; // mờ khi xa, rõ dần khi lại gần
     ctx.shadowColor = "rgba(84, 233, 154, 0.55)";
     ctx.shadowBlur = 24;
-    if (STATION_FLIP) {
-      // lật ngang để mặt trạm đón người chơi chạy sang phải
+    if (stationFlip) {
+      // lật ngang: mặt trạm đón người chơi chạy sang phải
       ctx.translate(stX + stW, stY);
       ctx.scale(-1, 1);
       ctx.drawImage(stationImg, 0, 0, stW, stH);
@@ -1542,6 +1562,8 @@ window.addEventListener("keydown", e => {
   if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].includes(e.key)) e.preventDefault();
   keys[e.key] = true;
   if (e.key === "Escape" && gameRunning) togglePause();
+  // F = lật chiều ảnh trạm cứu trợ
+  if ((e.key === "f" || e.key === "F") && gameRunning && !inShelter) toggleStationFlip();
 });
 window.addEventListener("keyup", e => { keys[e.key] = false; });
 window.addEventListener("blur", () => { keys = {}; });
@@ -1574,6 +1596,7 @@ on("gameOverMenuBtn", backToMenu);
 on("soundBtn", () => setSoundMuted(!soundMuted));
 (function initSoundLabel() { setSoundMuted(soundMuted); })();
 on("lockSubmitBtn", submitLockAnswer);
+on("flipStationBtn", () => { if (gameRunning) toggleStationFlip(); });
 (function () {
   const li = $("lockInput");
   if (li) li.addEventListener("keydown", e => { if (e.key === "Enter") submitLockAnswer(); });

@@ -56,9 +56,10 @@ TÀI KHOẢN / ĐĂNG NHẬP (AUTH):
 - Tiếng kêu zombie: anh/anhtiengkeuzombie.mp3 phát ngẫu nhiên mỗi 9-21 giây khi có quái gần,
   mỗi lần random volume + tốc độ cho tự nhiên.
 - Nút "🔊 ÂM THANH" trên HUD để bật/tắt cả nhạc + tiếng kêu, lưu lựa chọn vào localStorage (lastDayMuted).
-- Ảnh trạm cứu trợ: anh/tram-cuu-tro.png vẽ tại Trạm Cứu Trợ cuối mỗi màn, LẬT NGANG đúng chiều
-  người chơi chạy (trái -> phải) + mũi tên nhấp nháy "VÀO TRẠM" ở cổng bên trái.
-  Muốn đổi chiều lại: tìm STATION_FLIP trong game.js đặt false.
+- Ảnh trạm cứu trợ: anh/tram-cuu-tro.png vẽ tại Trạm Cứu Trợ cuối mỗi màn, NHỎ KHI CÒN XA và
+  TO DẦN + RÕ DẦN theo đúng chiều người chơi chạy tới (cảm giác lao về phía trạm).
+  LƯU Ý: ảnh này đối xứng ~91% nên lật ngang nhìn gần như không đổi — muốn đổi chiều thì bấm
+  PHÍM F khi đang chơi hoặc nút "🔀 LẬT ẢNH TRẠM CỨU TRỢ" trong menu Tạm Dừng (lưu vào localStorage).
   Nếu ảnh không nạp được thì tự vẽ lều cứu trợ cũ.
 
 MÀN ĐẶC BIỆT - GIẢI MÃ MẬT KHẨU TRẠM (mỗi 3 màn: 3, 6, 9...):
