@@ -152,10 +152,12 @@
           <div class="lock-ruler" id="lockRuler">A=1  B=2  C=3 ... Z=26</div>
           <div class="lock-hint" id="lockHint">💡 Gợi ý: ...</div>
         </div>
+        <div class="lock-reveal" id="lockReveal"></div>
+        <button type="button" class="lock-hint-btn" id="lockHintBtn">💡 MỞ GỢI Ý (hé chữ đầu)</button>
         <input id="lockInput" maxlength="8" placeholder="NHẬP MẬT KHẨU..." autocomplete="off">
         <button id="lockSubmitBtn">🔓 MỞ KHÓA TRẠM</button>
         <div class="lock-msg" id="lockMsg">Giải mã trước khi hết giờ để nhận CHÌA KHÓA!</div>
-        <p class="lock-warn">⚠️ Nhân vật ĐỨNG IM tại cổng và vẫn tự bắn zombie · Trả lời sai mất 10+ HP · <strong>Hết giờ không giải được = THUA!</strong></p>
+        <p class="lock-warn">⚠️ Nhân vật ĐỨNG IM tại cổng và vẫn tự bắn zombie · Trả lời sai mất 8 HP · <strong>Hết giờ không giải được = THUA!</strong> · Khó quá thì bấm 💡 mở gợi ý từng chữ</p>
       </div>
     </div>
     <div class="overlay hidden" id="mainMenu"><div class="menu"><div class="logo">LAST DAY</div><h2>ZOMBIE SURVIVAL</h2><p class="subtitle">THE CITY HAS FALLEN.<br>HOW LONG CAN YOU SURVIVE?</p><button id="unusedPlayBtn">▶ PLAY NOW</button><div class="game-info">BEST SCORE: <span id="bestScore">0</span><br>VERSION 1.0</div></div></div>
@@ -234,6 +236,6 @@
 
   <script src="../javascript/auth.js?v=2"></script>
   <script src="../javascript/shop.js?v=10"></script>
-  <script src="../javascript/game.js?v=25"></script>
+  <script src="../javascript/game.js?v=26"></script>
 </body>
 </html>

@@ -73,9 +73,13 @@ MÀN ĐẶC BIỆT - GIẢI MÃ MẬT KHẨU TRẠM (mỗi 3 màn: 3, 6, 9...):
   • MÃ ĐẢO NGƯỢC: từ bị viết ngược (vd PLEH), đọc phải sang trái — 22 giây
   • MÃ MORSE: các ký tự • và − kèm bảng morse A-Z ngay trong modal — 45 giây
 - Đồng hồ giải mã ⏱ chạy ngay khi mở cửa: còn ≤10 giây chuyển đỏ + nhấp nháy.
-- Giải đúng: nhận chìa khóa, +150 điểm CỘNG 5 điểm/giây còn lại; trạm quét sạch zombie,
-  hồi máu đầy và vào trạm bình thường.
-- Trả lời sai: mất 10+ HP mỗi lần (càng sai càng đau), đồng hồ vẫn chạy.
+  Thời gian đã NHIỀU HƠN cho dễ: Mã số/Dịch chữ 45s, Đảo 30s, Morse 55s.
+- Nút "💡 MỞ GỢI Ý": hé từng chữ cái của mật khẩu (tối đa trừ đúng 1 chữ cuối) — bí quá cứ bấm.
+- Giữ cửa dễ thở hơn: khi giải mã chỉ tối đa 10 zombie cùng lúc (bình thường 25 + 12 x màn).
+- Trả lời sai: chỉ mất 8 HP mỗi lần.
+- Giải đúng: nhận chìa khóa, +100 điểm CỘNG 3 điểm/giây còn lại; trạm quét sạch zombie,
+  hồi máu đầy và vào trạm.
+- THƯỞNG QUA TRẠM: 200 ĐIỂM CỐ ĐỊNH mỗi trạm (trước đây nhân theo màn 350 x màn -> điểm phình quá).
 - HẾT GIỜ KHÔNG GIẢI ĐƯỢC = THUA (Game Over ngay tại cổng).
 
 CỬA HÀNG SINH TỒN (SHOP) - ĐIỂM TÍCH LŨY:

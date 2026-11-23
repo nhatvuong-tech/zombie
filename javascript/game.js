@@ -527,11 +527,12 @@ function stationDefenseSweep() {
 }
 
 // Phần thưởng + hồi máu sau khi vào được trạm (isLate = vào trễ do hết giờ giải mã)
-function completeShelterArrival(isLate) {
+function completeShelterArrival() {
   // Hồi phục 100% máu & thể lực
   health = maxHealth;
   stamina = 100;
-  const bonus = wave * (isLate ? 175 : 350); // vào trễ chỉ được một nửa thưởng màn
+  // Thưởng qua trạm: 200 điểm cố định (trước đây nhân theo màn -> điểm phình quá)
+  const bonus = 200;
   score += bonus;
   updateHUD();
 
@@ -543,11 +544,9 @@ function completeShelterArrival(isLate) {
   const shelterDesc = $("shelterDesc");
   const shelterBonus = $("shelterBonus");
 
-  if (shelterTitle) shelterTitle.textContent = isLate ? "⚠️ VÀO TRẠM QUÁ TRỄ!" : "🎉 ĐÃ TỚI TRẠM CỨU TRỢ!";
-  if (shelterDesc) shelterDesc.textContent = isLate
-    ? "Bạn giải mã trễ, cổng chỉ mở khẩn cấp khi bầy zombie đã áp sát! Máu hồi đầy nhưng thưởng màn bị giảm một nửa."
-    : "Bạn đã vượt qua chặng chạy tử thần tới " + getShelterName(wave) + "! Quân nhu và máu đã nạp đầy 100%.";
-  if (shelterBonus) shelterBonus.textContent = "+" + bonus + " PTS" + (isLate ? " (trễ giờ -50%)" : "");
+  if (shelterTitle) shelterTitle.textContent = "🎉 ĐÃ TỚI TRẠM CỨU TRỢ!";
+  if (shelterDesc) shelterDesc.textContent = "Bạn đã vượt qua chặng chạy tử thần tới " + getShelterName(wave) + "! Quân nhu và máu đã nạp đầy 100%.";
+  if (shelterBonus) shelterBonus.textContent = "+" + bonus + " PTS";
 
   shelterCountdown = 3;
   const countText = $("countdownText");
@@ -597,10 +596,10 @@ function pickLockWord() {
 
 // ─── MÃ HÓA: 4 loại mã ngẫu nhiên + đồng hồ giải mã ────────────
 const LOCK_TYPES = [
-  { id: "number", name: "MÃ SỐ (A=1 → Z=26)", time: 35 },
-  { id: "caesar", name: "MÃ DỊCH CHỮ (+3)", time: 35 },
-  { id: "reverse", name: "MÃ ĐẢO NGƯỢC", time: 22 },
-  { id: "morse", name: "MÃ MORSE (• −)", time: 45 }
+  { id: "number", name: "MÃ SỐ (A=1 → Z=26)", time: 45 },
+  { id: "caesar", name: "MÃ DỊCH CHỮ (+3)", time: 45 },
+  { id: "reverse", name: "MÃ ĐẢO NGƯỢC", time: 30 },
+  { id: "morse", name: "MÃ MORSE (• −)", time: 55 }
 ];
 const ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const MORSE = {
@@ -614,6 +613,7 @@ let lockType = "number";
 let lastLockType = "";
 let lockTimer = 0;
 let lockInterval = null;
+let lockRevealCount = 0; // số chữ cái đã được mở gợi ý
 
 function pickLockType() {
   let t;
@@ -656,6 +656,34 @@ function stopLockTimer() {
   if (lockInterval) { clearInterval(lockInterval); lockInterval = null; }
 }
 
+// Mở gợi ý: hé lộ từng chữ cái của mật khẩu (tối đa trừ đúng 1 chữ cuối)
+function updateLockReveal() {
+  const revEl = $("lockReveal");
+  const btn = $("lockHintBtn");
+  const w = lockWord ? lockWord.w : "";
+  if (revEl) {
+    revEl.textContent = lockRevealCount > 0
+      ? w.split("").map((c, i) => i < lockRevealCount ? c : "_").join("  ")
+      : "";
+  }
+  if (btn) {
+    const maxReveal = Math.max(0, w.length - 1);
+    btn.disabled = lockRevealCount >= maxReveal;
+    btn.textContent = lockRevealCount === 0
+      ? "💡 MỞ GỢI Ý (hé chữ đầu)"
+      : (btn.disabled ? "💡 Đã mở hết gợi ý" : "💡 MỞ THÊM 1 CHỮ");
+  }
+}
+
+function revealLockLetter() {
+  if (!lockWord) return;
+  const maxReveal = Math.max(0, lockWord.w.length - 1);
+  if (lockRevealCount < maxReveal) {
+    lockRevealCount++;
+    updateLockReveal();
+  }
+}
+
 function updateLockTimerDisplay() {
   const el = $("lockTimer");
   if (!el) return;
@@ -666,6 +694,7 @@ function updateLockTimerDisplay() {
 function startLockPuzzle() {
   lockWord = pickLockWord();
   lockFailed = 0;
+  lockRevealCount = 0;
   const type = pickLockType();
   lockType = type.id;
   const enc = encodeLock(lockWord.w, type.id);
@@ -685,6 +714,7 @@ function startLockPuzzle() {
   if (lenEl) lenEl.textContent = lockWord.w.length + " CHỮ";
   if (msgEl) { msgEl.textContent = "Giải mã trước khi hết giờ để nhận CHÌA KHÓA!"; msgEl.className = "lock-msg"; }
   if (inputEl) { inputEl.value = ""; inputEl.focus(); }
+  updateLockReveal();
 
   // Đồng hồ giải mã
   stopLockTimer();
@@ -726,8 +756,8 @@ function submitLockAnswer() {
     stopLockTimer();
     atStationLock = false;
     hide("lockModal");
-    const timeBonus = lockTimer > 0 ? Math.max(0, lockTimer) * 5 : 0; // giải nhanh được thưởng thêm
-    const total = 150 + timeBonus;
+    const timeBonus = lockTimer > 0 ? Math.max(0, lockTimer) * 3 : 0; // giải nhanh được thưởng thêm
+    const total = 100 + timeBonus;
     score += total;
     addFloatingText(player.x, player.y - 30, "🔓 +" + total + " ĐIỂM GIẢI MÃ!", "#ffea79");
     updateHUD();
@@ -738,9 +768,9 @@ function submitLockAnswer() {
     completeShelterArrival();
     return;
   }
-  // Trả lời sai: mất HP, thử lại (đồng hồ vẫn chạy, zombie vẫn đang lao tới!)
+  // Trả lời sai: mất 8 HP (đã giảm độ khó), thử lại — đồng hồ vẫn chạy, zombie vẫn lao tới!
   lockFailed++;
-  const dmg = damagePlayer(10 + lockFailed * 2);
+  const dmg = damagePlayer(8);
   shakeTimer = 0.25;
   updateHUD();
   if (health <= 0) {
@@ -849,7 +879,8 @@ function update(dt) {
   if (player.powerTimer > 0) player.powerTimer -= dt;
 
   // 2. Tần suất sinh Zombie & Đợt bầy đàn đông đảo (Massive Zombie Horde)
-  const maxZombies = 25 + wave * 12; // Wave 1: 37 quái, Wave 2: 49 quái, Wave 3: 61 quái...
+  // Khi đứng giữ cửa giải mã: giảm số zombie để dễ thở hơn
+  const maxZombies = atStationLock ? 10 : 25 + wave * 12; // Wave 1: 37 quái, Wave 2: 49 quái...
   spawnTimer -= dt;
   if (spawnTimer <= 0 && zombies.length < maxZombies) {
     // Mỗi lần sinh 1 đến 3 con cùng lúc
@@ -1705,6 +1736,7 @@ on("gameOverMenuBtn", backToMenu);
 on("soundBtn", () => setSoundMuted(!soundMuted));
 (function initSoundLabel() { setSoundMuted(soundMuted); })();
 on("lockSubmitBtn", submitLockAnswer);
+on("lockHintBtn", revealLockLetter);
 (function () {
   const li = $("lockInput");
   if (li) li.addEventListener("keydown", e => { if (e.key === "Enter") submitLockAnswer(); });
