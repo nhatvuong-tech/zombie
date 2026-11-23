@@ -134,6 +134,89 @@ function logoutUser() {
   onAuthChanged("Đã đăng xuất, chơi chế độ Khách.");
 }
 
+// ─── XUẤT / NHẬP DỮ LIỆU (sao lưu tài khoản ra file) ─────────────
+function collectAuthData() {
+  const bests = {};
+  try {
+    if (localStorage.getItem("lastDayBest") !== null) bests["lastDayBest"] = Number(localStorage.getItem("lastDayBest")) || 0;
+    Object.keys(readAccounts().users).forEach(k => {
+      const v = localStorage.getItem("lastDayBest@" + k);
+      if (v !== null) bests["lastDayBest@" + k] = Number(v) || 0;
+    });
+  } catch (e) {}
+  let guestProfile = null;
+  try {
+    const g = localStorage.getItem("lastDayProfile_v1");
+    if (g) guestProfile = JSON.parse(g);
+  } catch (e) {}
+  return {
+    app: "LASTDAY-ZOMBIE",
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    origin: (location.origin || "file"),
+    accounts: readAccounts(),
+    bests: bests,
+    guestProfile: guestProfile
+  };
+}
+
+function exportAuthData() {
+  try {
+    const data = collectAuthData();
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const d = new Date();
+    const stamp = d.getFullYear() + ("0" + (d.getMonth() + 1)).slice(-2) + ("0" + d.getDate()).slice(-2);
+    a.href = url;
+    a.download = "lastday-backup-" + stamp + ".json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    authToast("💾 Đã xuất file backup (tài khoản + điểm + đồ)!");
+    return true;
+  } catch (e) {
+    authToast("Không xuất được dữ liệu!");
+    return false;
+  }
+}
+
+function importAuthData(text) {
+  let d;
+  try { d = JSON.parse(text); } catch (e) { return { ok: false, msg: "File không phải JSON hợp lệ!" }; }
+  if (!d || d.app !== "LASTDAY-ZOMBIE" || !d.accounts || typeof d.accounts.users !== "object") {
+    return { ok: false, msg: "File backup không đúng định dạng game!" };
+  }
+  const a = readAccounts();
+  let added = 0, updated = 0;
+  Object.keys(d.accounts.users).forEach(k => {
+    const imp = d.accounts.users[k];
+    if (!imp || !imp.salt || !imp.hash || !imp.profile) return;
+    const cur = a.users[k];
+    if (cur && (cur.createdAt || 0) > (imp.createdAt || 0)) return; // bản trên máy mới hơn thì giữ
+    if (cur) updated++; else added++;
+    a.users[k] = imp;
+  });
+  writeAccounts(a);
+  try {
+    if (d.bests) Object.keys(d.bests).forEach(k => {
+      if (typeof d.bests[k] === "number" && k.indexOf("lastDayBest") === 0) {
+        localStorage.setItem(k, String(d.bests[k]));
+      }
+    });
+    if (d.guestProfile && typeof d.guestProfile === "object") {
+      localStorage.setItem("lastDayProfile_v1", JSON.stringify(d.guestProfile));
+    }
+  } catch (e) {}
+  if (typeof reloadProfile === "function") reloadProfile();
+  if (typeof reloadBest === "function") reloadBest();
+  updateAuthUI();
+  return { ok: true, msg: "Đã nhập " + (added + updated) + " tài khoản (" + added + " mới, " + updated + " cập nhật)!" };
+}
+
+
+
 // ─── Giao diện Auth ─────────────────────────────────────────────
 let authMode = "login";
 
@@ -184,6 +267,12 @@ function updateAuthUI() {
   if (su) su.textContent = isLogged ? ("👤 " + name) : "👤 Khách (không lưu cloud)";
   const hud = document.getElementById("hudUser");
   if (hud) hud.textContent = isLogged ? ("👤 " + name) : "👤 Khách";
+  const note = document.getElementById("authOriginNote");
+  if (note) {
+    const n = Object.keys(readAccounts().users).length;
+    note.textContent = "💾 Kho hiện tại: " + (location.origin || "file (mở trực tiếp)") +
+      " — " + n + " tài khoản. Mỗi link/trình duyệt là một kho riêng, nhớ XUẤT file để mang đi!";
+  }
 }
 
 // Gọi sau khi đăng nhập/đăng ký/đăng xuất để nạp lại hồ sơ & làm mới UI
@@ -266,6 +355,31 @@ function initAuthUI() {
     navBtn.addEventListener("click", () => {
       if (navBtn.dataset.mode === "logout") logoutUser();
       else openAuth("login");
+    });
+  }
+
+  // Xuất / nhập dữ liệu tài khoản
+  const expBtn = document.getElementById("authExportBtn");
+  if (expBtn) expBtn.addEventListener("click", exportAuthData);
+  const impBtn = document.getElementById("authImportBtn");
+  const impFile = document.getElementById("authImportFile");
+  if (impBtn && impFile) {
+    impBtn.addEventListener("click", () => impFile.click());
+    impFile.addEventListener("change", () => {
+      const f = impFile.files && impFile.files[0];
+      if (!f) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const res = importAuthData(String(reader.result));
+        const msgEl = document.getElementById("authMsg");
+        if (msgEl) {
+          msgEl.textContent = res.msg;
+          msgEl.className = "auth-msg" + (res.ok ? "" : " error");
+        }
+        if (res.ok) authToast(res.msg);
+      };
+      reader.readAsText(f);
+      impFile.value = "";
     });
   }
 

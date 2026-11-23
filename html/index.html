@@ -200,13 +200,19 @@
         <button id="authSubmitBtn">🔓 ĐĂNG NHẬP</button>
         <div class="auth-msg" id="authMsg"></div>
         <button class="auth-guest" id="authGuestBtn">🎮 CHƠI KHÔNG CẦN TÀI KHOẢN</button>
-        <p class="auth-note">Tài khoản lưu ngay trên máy bạn (localStorage) — điểm &amp; đồ đã mua sẽ tách riêng từng người.<br>Đăng ký sẽ mang theo điểm/đồ bạn đang có ở chế độ Khách.</p>
+        <div class="auth-tools">
+          <button type="button" id="authExportBtn">💾 XUẤT FILE BACKUP</button>
+          <button type="button" id="authImportBtn">📂 NHẬP FILE BACKUP</button>
+          <input type="file" id="authImportFile" accept=".json,application/json" style="display:none">
+        </div>
+        <p class="auth-note" id="authOriginNote"></p>
+        <p class="auth-note">Tài khoản lưu trong trình duyệt ở **link đang chơi** — mỗi link (localhost / link online / mở file) là một kho riêng. Muốn chuyển sang link/máy khác thì bấm XUẤT FILE rồi NHẬP FILE ở đó. Đăng ký sẽ mang theo điểm/đồ của chế độ Khách.</p>
       </div>
     </div>
   </div>
 
-  <script src="../javascript/auth.js?v=1"></script>
-  <script src="../javascript/shop.js?v=9"></script>
-  <script src="../javascript/game.js?v=18"></script>
+  <script src="../javascript/auth.js?v=2"></script>
+  <script src="../javascript/shop.js?v=10"></script>
+  <script src="../javascript/game.js?v=19"></script>
 </body>
 </html>

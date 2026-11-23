@@ -40,6 +40,15 @@ TÀI KHOẢN / ĐĂNG NHẬP (AUTH):
   • lastDaySession_v1   : phiên đăng nhập hiện tại.
   • lastDayBest@<tên>   : điểm cao riêng của từng tài khoản (khách dùng lastDayBest).
 - Chế độ KHÁCH vẫn chơi bình thường, hồ sơ ở khóa lastDayProfile_v1.
+- XUẤT / NHẬP FILE BACKUP (trong modal Đăng nhập): tải toàn bộ tài khoản + điểm cao + hồ sơ
+  khách ra file JSON, nhập lại ở link/trình duyệt/máy khác. Chống mất dữ liệu khi đổi link.
+- LƯU Ý: localStorage là KHO THEO LINK (origin). Tài khoản tạo ở localhost:8765 không hiện ở
+  link GitHub Pages hay khi mở file trực tiếp (và ngược lại). Luôn chơi bằng 1 link cố định,
+  hoặc dùng XUẤT FILE ở link cũ + NHẬP FILE ở link mới. Đóng tab KHÔNG mất dữ liệu;
+  dữ liệu chỉ mất khi dùng ẩn danh (incognito) hoặc trình duyệt đặt "xóa dữ liệu khi thoát".
+- GAME CHẠY NỀN KHI CHUYỂN TAB: requestAnimationFrame dừng khi tab ẩn nên game dùng thêm
+  vòng setInterval bù thời gian thực (update() chạy nền, hiển thị khi quay lại tab).
+  Vòng lặp chính tách bằng ensureLoop() để không bao giờ chạy trùng.
 
 CỬA HÀNG SINH TỒN (SHOP) - ĐIỂM TÍCH LŨY:
 - Điểm sau mỗi ván được quy đổi tự động: ĐIỂM NHẬN = sàn(Điểm ván / 5). Ví dụ 1.500 điểm -> 300 điểm tích lũy.

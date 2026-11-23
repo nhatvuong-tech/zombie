@@ -529,8 +529,12 @@ function closeShop() {
       paused = false;
       const pb = document.getElementById("pauseBtn");
       if (pb) pb.textContent = "Ⅱ TẠM DỪNG";
-      if (typeof lastTime !== "undefined") lastTime = performance.now();
-      if (typeof loop === "function") animationId = requestAnimationFrame(loop);
+      if (typeof ensureLoop === "function") {
+        ensureLoop();
+      } else {
+        if (typeof lastTime !== "undefined") lastTime = performance.now();
+        if (typeof loop === "function") animationId = requestAnimationFrame(loop);
+      }
     }
   }
   previousGameState = null;

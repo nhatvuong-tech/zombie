@@ -152,7 +152,7 @@ function startGame() {
 
   gameRunning = true;
   lastTime = performance.now();
-  animationId = requestAnimationFrame(loop);
+  ensureLoop();
 }
 
 // Khởi tạo một màn chạy mới
@@ -1131,6 +1131,62 @@ function loop(timestamp) {
   if (gameRunning && !paused) animationId = requestAnimationFrame(loop);
 }
 
+// ─── CHẠY NỀN KHI CHUYỂN TAB / ẨN CỬA SỔ ───────────────────────
+// requestAnimationFrame ngừng hẳn khi tab ẩn -> dùng setInterval
+// (trình duyệt cho chạy ~1 giây/lần khi ẩn) và bù lại đúng thời gian thực.
+let bgTimer = null;
+
+function backgroundTick() {
+  if (!gameRunning || paused || inShelter) { stopBackgroundLoop(); return; }
+  const now = performance.now();
+  let dt = (now - lastTime) / 1000;
+  lastTime = now;
+  if (dt <= 0) return;
+  if (dt > 3) dt = 3; // máy ngủ / bị throttle quá lâu thì chỉ bù tối đa 3 giây
+  while (dt > 0.0001) {
+    update(Math.min(0.08, dt));
+    if (!gameRunning || paused) break;
+    dt -= 0.08;
+  }
+}
+
+function startBackgroundLoop() {
+  if (bgTimer) return;
+  bgTimer = setInterval(backgroundTick, 500);
+  backgroundTick();
+}
+
+function stopBackgroundLoop() {
+  if (bgTimer) { clearInterval(bgTimer); bgTimer = null; }
+}
+
+// Bắt đầu / nối lại vòng lặp chính, tránh chạy trùng 2 vòng
+function ensureLoop() {
+  if (!gameRunning || paused) return;
+  if (document.hidden) {
+    stopBackgroundLoop();
+    startBackgroundLoop();
+    return;
+  }
+  stopBackgroundLoop();
+  if (animationId) cancelAnimationFrame(animationId);
+  lastTime = performance.now();
+  animationId = requestAnimationFrame(loop);
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    if (animationId) { cancelAnimationFrame(animationId); animationId = null; }
+    if (gameRunning && !paused && !inShelter) startBackgroundLoop();
+  } else {
+    stopBackgroundLoop();
+    if (gameRunning && !paused && !inShelter) {
+      lastTime = performance.now();
+      animationId = requestAnimationFrame(loop);
+    }
+  }
+});
+
 function updateHUD() {
   $("score").textContent = score;
   $("wave").textContent = wave;
@@ -1213,6 +1269,7 @@ function angleToDirection(angle) {
 function endGame() {
   gameRunning = false;
   if (animationId) cancelAnimationFrame(animationId);
+  stopBackgroundLoop();
   if (shelterInterval) clearInterval(shelterInterval);
   hide("chaseWarning");
   hide("bossBarWrap");
@@ -1236,6 +1293,7 @@ function backToMenu() {
   gameRunning = false;
   paused = false;
   if (animationId) cancelAnimationFrame(animationId);
+  stopBackgroundLoop();
   if (shelterInterval) clearInterval(shelterInterval);
   ["guide", "pauseMenu", "gameOver", "hud", "shelterModal", "bossBarWrap"].forEach(hide);
   hide("gameScreen");
@@ -1248,9 +1306,11 @@ function togglePause() {
   paused = !paused;
   paused ? show("pauseMenu") : hide("pauseMenu");
   $("pauseBtn").textContent = paused ? "▶ TIẾP TỤC" : "Ⅱ TẠM DỪNG";
-  if (!paused) {
-    lastTime = performance.now();
-    animationId = requestAnimationFrame(loop);
+  if (paused) {
+    stopBackgroundLoop();
+    if (animationId) { cancelAnimationFrame(animationId); animationId = null; }
+  } else {
+    ensureLoop();
   }
 }
 
