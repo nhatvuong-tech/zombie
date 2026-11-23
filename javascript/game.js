@@ -1166,18 +1166,19 @@ function drawShelterZone() {
   ctx.fillText("🏕️ TRẠM CỨU TRỢ AN TOÀN", bx + 140, by + 28);
   ctx.restore();
 
-  // Ảnh trạm cứu trợ (nếu nạp được) — nhỏ khi còn xa, TO DẦN theo chiều chạy tới
+  // Ảnh trạm cứu trợ (nếu nạp được) — NHỎ khi còn xa, TO CỰC ĐẠ khi chạy tới
   if (stationImg) {
     const remain = Math.max(0, goalX - player.x);
     const near = Math.max(0, Math.min(1, 1 - remain / 1500)); // 0 = còn xa, 1 = tới nơi
-    const scaleNear = 0.35 + 0.65 * (1 - Math.pow(1 - near, 2));
-    let stH = Math.min(H * 0.62, 300) * scaleNear;
+    const scaleNear = 0.5 + 0.5 * (1 - Math.pow(1 - near, 2));
+    // TO HẾT CỠ: cao tới 95% màn hình khi tới nơi (bản cũ chỉ 62%/300px)
+    let stH = H * 0.95 * scaleNear;
     let stW = stH * (stationImg.width / stationImg.height);
-    let stX = gScreenX + 40;
-    // không để trạm tràn khỏi màn hình
-    if (stX + stW > W - 24) {
-      const k = (W - 24 - stX) / stW;
-      if (k > 0.2) { stW *= k; stH *= k; }
+    let stX = gScreenX + 20;
+    // không để trạm tràn khỏi màn hình (chỉ thu nhỏ nếu quá chật)
+    if (stX + stW > W - 16) {
+      const k = (W - 16 - stX) / stW;
+      if (k > 0.3) { stW *= k; stH *= k; }
     }
     const stY = (H - stH) / 2;
     // vùng sáng phía sau trạm

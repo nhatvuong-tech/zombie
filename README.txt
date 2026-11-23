@@ -57,7 +57,8 @@ TÀI KHOẢN / ĐĂNG NHẬP (AUTH):
   mỗi lần random volume + tốc độ cho tự nhiên.
 - Nút "🔊 ÂM THANH" trên HUD để bật/tắt cả nhạc + tiếng kêu, lưu lựa chọn vào localStorage (lastDayMuted).
 - Ảnh trạm cứu trợ: anh/tram-cuu-tro_rotated.png (bản xoay đúng chiều 941x1672) vẽ tại Trạm
-  Cứu Trợ cuối mỗi màn, NHỎ KHI CÒN XA và TO DẦN + RÕ DẦN theo đúng chiều người chơi chạy tới.
+  Cứu Trợ cuối mỗi màn, TO HẾT CỠ (tối đa 95% chiều cao màn hình — gấp ~4,6 lần bản cũ),
+  nhỏ khi còn xa và phóng to dần theo đúng chiều người chơi chạy tới.
   Nếu ảnh không nạp được thì tự vẽ lều cứu trợ cũ.
 
 MÀN ĐẶC BIỆT - GIẢI MÃ MẬT KHẨU TRẠM (mỗi 3 màn: 3, 6, 9...):
