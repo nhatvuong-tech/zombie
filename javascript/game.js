@@ -119,6 +119,70 @@ loadSprite("down", zombieSprites, "zombie_down.png", _spriteDone);
 loadSprite("up", zombieSprites, "zombie_up.png", _spriteDone);
 loadSprite("left", zombieSprites, "zombie_left.png", _spriteDone);
 loadSprite("right", zombieSprites, "zombie_right.png", _spriteDone);
+
+// ─── Ảnh Trạm Cứu Trợ ───────────────────────────────────────────
+let stationImg = null;
+(function () {
+  const img = new Image();
+  img.onload = () => { stationImg = img; };
+  img.onerror = () => { /* giữ hình vẽ cũ */ };
+  img.src = "../anh/tram-cuu-tro.png";
+})();
+
+// ─── Âm thanh: nhạc nền + tiếng kêu zombie ──────────────────────
+let bgMusic = null;
+let zombieGroan = null;
+let growlTimer = 3;
+let soundMuted = localStorage.getItem("lastDayMuted") === "1";
+
+function initAudio() {
+  if (bgMusic) return;
+  try {
+    bgMusic = new Audio("../anh/nhacgame.mp3");
+    bgMusic.loop = true;
+    bgMusic.volume = 0.35;
+    bgMusic.preload = "auto";
+    bgMusic.muted = soundMuted;
+
+    zombieGroan = new Audio("../anh/anhtiengkeuzombie.mp3");
+    zombieGroan.preload = "auto";
+  } catch (e) {}
+}
+
+function setSoundMuted(m) {
+  soundMuted = m;
+  try { localStorage.setItem("lastDayMuted", m ? "1" : "0"); } catch (e) {}
+  if (bgMusic) bgMusic.muted = m;
+  if (zombieGroan) zombieGroan.muted = m;
+  const b = $("soundBtn");
+  if (b) b.textContent = m ? "🔇 ĐÃ TẮT" : "🔊 ÂM THANH";
+}
+
+function startMusic() {
+  initAudio();
+  if (!bgMusic) return;
+  bgMusic.muted = soundMuted;
+  const p = bgMusic.play();
+  if (p && p.catch) p.catch(() => {}); // trình duyệt chặn autoplay thì bỏ qua
+}
+
+function stopMusic() {
+  if (bgMusic) { try { bgMusic.pause(); } catch (e) {} }
+}
+
+// Kêu ngẫu nhiên khi có zombie gần
+function playZombieGrowl() {
+  if (soundMuted || !zombieGroan) return;
+  const near = zombies && zombies.some(z => !z.dead && Math.abs(z.x - player.x) < W * 0.75);
+  if (!near) return;
+  try {
+    const s = zombieGroan.cloneNode();
+    s.volume = 0.22 + Math.random() * 0.26;
+    s.playbackRate = 0.85 + Math.random() * 0.3;
+    const p = s.play();
+    if (p && p.catch) p.catch(() => {});
+  } catch (e) {}
+}
 (function() { const img = new Image(); img.onload = () => { supplySprite = img; _spriteDone(); }; img.onerror = _spriteDone; img.src = spriteBase + "supply.png"; })();
 (function() { const img = new Image(); img.onload = () => { bulletSprite = img; _spriteDone(); }; img.onerror = _spriteDone; img.src = spriteBase + "bullet.png"; })();
 
@@ -149,6 +213,8 @@ function startGame() {
   if (typeof refreshCoinUI === "function") refreshCoinUI();
   updateHUD();
   showMessage("MÀN 1: CHẠY TỚI TRẠM CỨU TRỢ ALPHA!");
+
+  startMusic();
 
   gameRunning = true;
   lastTime = performance.now();
@@ -495,6 +561,13 @@ function update(dt) {
   if (equipStats && equipStats.regen > 0 && health < maxHealth) {
     health = Math.min(maxHealth, health + equipStats.regen * dt);
     updateHUD();
+  }
+
+  // 0b. Tiếng kêu zombie ngẫu nhiên khi có quái gần
+  growlTimer -= dt;
+  if (growlTimer <= 0) {
+    growlTimer = 2.2 + Math.random() * 4.5;
+    playZombieGrowl();
   }
 
   // 1. Quản lý Thể Lực (Stamina) & Di chuyển của Người Chơi
@@ -890,30 +963,50 @@ function drawShelterZone() {
   ctx.fillText("🏕️ TRẠM CỨU TRỢ AN TOÀN", bx + 140, by + 28);
   ctx.restore();
 
-  // Lều cứu trợ chữ thập đỏ
-  const tentX = gScreenX + 80, tentY = H * 0.28, tentW = 140, tentH = 90;
-  ctx.fillStyle = "#264234";
-  ctx.beginPath();
-  ctx.moveTo(tentX, tentY + tentH);
-  ctx.lineTo(tentX + tentW / 2, tentY);
-  ctx.lineTo(tentX + tentW, tentY + tentH);
-  ctx.closePath();
-  ctx.fill();
-  ctx.strokeStyle = "#4ea87d"; ctx.lineWidth = 3; ctx.stroke();
-  ctx.fillStyle = "#ff4444";
-  ctx.fillRect(tentX + tentW / 2 - 4, tentY + tentH / 2 - 14, 8, 28);
-  ctx.fillRect(tentX + tentW / 2 - 14, tentY + tentH / 2 - 4, 28, 8);
+  // Ảnh trạm cứu trợ (nếu nạp được), vẽ to rõ bên phải vạch an toàn
+  if (stationImg) {
+    const stH = Math.min(H * 0.62, 300);
+    const stW = stH * (stationImg.width / stationImg.height);
+    const stX = gScreenX + 40;
+    const stY = (H - stH) / 2;
+    // vùng sáng phía sau trạm
+    const glow = ctx.createRadialGradient(stX + stW / 2, stY + stH / 2, 20, stX + stW / 2, stY + stH / 2, stW / 1.4);
+    glow.addColorStop(0, "rgba(125, 255, 173, 0.28)");
+    glow.addColorStop(1, "rgba(125, 255, 173, 0)");
+    ctx.fillStyle = glow;
+    ctx.fillRect(stX - 60, stY - 40, stW + 120, stH + 80);
 
-  // Trực thăng
-  const heliX = gScreenX + 260, heliY = H * 0.48;
-  ctx.fillStyle = "#1e3028"; ctx.fillRect(heliX, heliY - 20, 90, 40);
-  ctx.strokeStyle = "#54e99a"; ctx.strokeRect(heliX, heliY - 20, 90, 40);
-  const propAngle = (performance.now() / 40);
-  ctx.strokeStyle = "rgba(200, 240, 220, 0.7)"; ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(heliX + 45 - Math.cos(propAngle) * 50, heliY - 26);
-  ctx.lineTo(heliX + 45 + Math.cos(propAngle) * 50, heliY - 26);
-  ctx.stroke();
+    ctx.save();
+    ctx.shadowColor = "rgba(84, 233, 154, 0.55)";
+    ctx.shadowBlur = 24;
+    ctx.drawImage(stationImg, stX, stY, stW, stH);
+    ctx.restore();
+  } else {
+    // Lều cứu trợ chữ thập đỏ (bản vẽ cũ khi chưa có ảnh)
+    const tentX = gScreenX + 80, tentY = H * 0.28, tentW = 140, tentH = 90;
+    ctx.fillStyle = "#264234";
+    ctx.beginPath();
+    ctx.moveTo(tentX, tentY + tentH);
+    ctx.lineTo(tentX + tentW / 2, tentY);
+    ctx.lineTo(tentX + tentW, tentY + tentH);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = "#4ea87d"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = "#ff4444";
+    ctx.fillRect(tentX + tentW / 2 - 4, tentY + tentH / 2 - 14, 8, 28);
+    ctx.fillRect(tentX + tentW / 2 - 14, tentY + tentH / 2 - 4, 28, 8);
+
+    // Trực thăng
+    const heliX = gScreenX + 260, heliY = H * 0.48;
+    ctx.fillStyle = "#1e3028"; ctx.fillRect(heliX, heliY - 20, 90, 40);
+    ctx.strokeStyle = "#54e99a"; ctx.strokeRect(heliX, heliY - 20, 90, 40);
+    const propAngle = (performance.now() / 40);
+    ctx.strokeStyle = "rgba(200, 240, 220, 0.7)"; ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(heliX + 45 - Math.cos(propAngle) * 50, heliY - 26);
+    ctx.lineTo(heliX + 45 + Math.cos(propAngle) * 50, heliY - 26);
+    ctx.stroke();
+  }
 }
 
 function drawBarrels() {
@@ -1270,6 +1363,7 @@ function endGame() {
   gameRunning = false;
   if (animationId) cancelAnimationFrame(animationId);
   stopBackgroundLoop();
+  stopMusic();
   if (shelterInterval) clearInterval(shelterInterval);
   hide("chaseWarning");
   hide("bossBarWrap");
@@ -1292,6 +1386,7 @@ function endGame() {
 function backToMenu() {
   gameRunning = false;
   paused = false;
+  stopMusic();
   if (animationId) cancelAnimationFrame(animationId);
   stopBackgroundLoop();
   if (shelterInterval) clearInterval(shelterInterval);
@@ -1348,6 +1443,8 @@ on("pauseBtn", togglePause);
 on("resumeBtn", togglePause);
 on("menuBtn", backToMenu);
 on("gameOverMenuBtn", backToMenu);
+on("soundBtn", () => setSoundMuted(!soundMuted));
+(function initSoundLabel() { setSoundMuted(soundMuted); })();
 on("nextWaveBtn", () => {
   if (inShelter) {
     if (shelterInterval) clearInterval(shelterInterval);

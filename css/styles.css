@@ -57,6 +57,7 @@ footer{padding:30px 7%;display:flex;justify-content:space-between;align-items:ce
 .hud button,button{padding:11px 15px;color:#7dffad;background:#182c2a;border:1px solid #54e99a;border-radius:8px;font-weight:bold;cursor:pointer}.hud button{pointer-events:auto}
 .hud-btns{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
 .hud-btns #hudShopBtn{background:#241d0c;border-color:#ffd76a;color:#ffd76a;white-space:nowrap}
+.hud-btns #soundBtn{background:#0f1d17;border-color:#54e99a;color:#c9ffe0;white-space:nowrap}
 .overlay{position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;padding:20px;background:#03090ce0}
 /* Cửa hàng phải nằm trên #gameScreen (z-index:20) để mở được khi đang chơi */
 #shopModal{z-index:60}

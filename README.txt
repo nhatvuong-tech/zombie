@@ -50,6 +50,15 @@ TÀI KHOẢN / ĐĂNG NHẬP (AUTH):
   vòng setInterval bù thời gian thực (update() chạy nền, hiển thị khi quay lại tab).
   Vòng lặp chính tách bằng ensureLoop() để không bao giờ chạy trùng.
 
+ÂM THANH & ẢNH TRẠM CỨU TRỢ:
+- Nhạc nền: anh/nhacgame.mp3 tự chạy khi bấm CHƠI NGAY / CHƠI LẠI (loop, volume 0.35),
+  dừng khi Game Over / về menu. Trình duyệt chặn autoplay thì game vẫn chơi bình thường.
+- Tiếng kêu zombie: anh/anhtiengkeuzombie.mp3 phát ngẫu nhiên mỗi 2-6 giây khi có quái gần,
+  mỗi lần random volume + tốc độ cho tự nhiên.
+- Nút "🔊 ÂM THANH" trên HUD để bật/tắt cả nhạc + tiếng kêu, lưu lựa chọn vào localStorage (lastDayMuted).
+- Ảnh trạm cứu trợ: anh/tram-cuu-tro.png (tên cũ f01e47d8-...png đã đổi tên) vẽ tại Trạm Cứu Trợ
+  cuối mỗi màn, kèm quầng sáng xanh. Nếu ảnh không nạp được thì tự vẽ lều cứu trợ cũ.
+
 CỬA HÀNG SINH TỒN (SHOP) - ĐIỂM TÍCH LŨY:
 - Điểm sau mỗi ván được quy đổi tự động: ĐIỂM NHẬN = sàn(Điểm ván / 5). Ví dụ 1.500 điểm -> 300 điểm tích lũy.
 - Điểm tích lũy lưu trong LocalStorage (khóa lastDayProfile_v1) nên giữ nguyên khi tải lại trang.
